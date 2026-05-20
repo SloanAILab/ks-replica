@@ -190,14 +190,14 @@ img { max-width: 100%; height: auto; display: block; }
 .ks-tab-content {
   min-height: 300px;
   max-height: 500px;
-  overflow-y: hidden;
-  background: #FBFBFA;
-  display: flex;
-}
-.ks-tab-content.no-sidebar {
-  display: block;
   overflow-y: auto;
+  background: #FBFBFA;
   padding: 20px;
+}
+.ks-tab-content.has-sidebar {
+  display: flex;
+  overflow-y: hidden;
+  padding: 0;
 }
 .ks-tab-content h2, .ks-tab-content h3 {
   margin-top: 16px;
@@ -471,7 +471,7 @@ function renderProject() {
   document.getElementById("ks-backers").textContent = p.backers.toLocaleString();
   document.getElementById("ks-days").textContent = p.days_left;
 
-  // Sidebar rewards (max 5, full descriptions)
+  // Sidebar rewards (compact: amount + name only, max 5)
   var rewards = p.rewards || [];
   var shown = rewards.slice(0, 5);
   var html = "";
@@ -480,15 +480,6 @@ function renderProject() {
     html += '<div class="ks-sidebar-reward">';
     html += '<div class="pledge">Pledge ' + escHtml(r.amount) + '</div>';
     html += '<div class="rname">' + escHtml(r.name) + '</div>';
-    if (r.description) {
-      html += '<div class="rdesc">' + escHtml(r.description) + '</div>';
-    }
-    if (r.delivery) {
-      html += '<div class="rmeta">Est. delivery: ' + formatDelivery(r.delivery) + '</div>';
-    }
-    if (r.shipping) {
-      html += '<div class="rmeta">Ships to: ' + escHtml(r.shipping) + '</div>';
-    }
     if (r.backers) {
       html += '<div class="rmeta">' + r.backers.toLocaleString() + ' backer' + (r.backers !== 1 ? 's' : '') + '</div>';
     }
@@ -497,7 +488,7 @@ function renderProject() {
     }
     html += '</div>';
   }
-  // "See all rewards" link
+  // "See all rewards" link -> switches to Rewards tab
   if (rewards.length > 0) {
     html += '<div class="ks-see-all-rewards" onclick="switchToTab(\x27rewards\x27)">See all ' + rewards.length + ' rewards &rarr;</div>';
   }
@@ -529,11 +520,11 @@ function renderTab() {
 
   if (currentTab === "campaign") {
     // Campaign tab: two-column layout with section nav
-    container.classList.remove("no-sidebar");
+    container.classList.add("has-sidebar");
     renderCampaignTab(container);
   } else {
     // All other tabs: simple scrollable content
-    container.classList.add("no-sidebar");
+    container.classList.remove("has-sidebar");
     container.scrollTop = 0;
 
     switch (currentTab) {
@@ -563,7 +554,7 @@ function renderTab() {
 function renderCampaignTab(container) {
   var descHtml = currentProject.description_html || '';
   if (!descHtml) {
-    container.classList.add("no-sidebar");
+    container.classList.remove("has-sidebar");
     container.innerHTML = '<div class="ks-empty-state">No description available.</div>';
     return;
   }
