@@ -499,7 +499,7 @@ function renderProject() {
   }
   // "See all rewards" link
   if (rewards.length > 0) {
-    html += '<div class="ks-see-all-rewards" onclick="switchToTab('rewards')">See all ' + rewards.length + ' rewards &rarr;</div>';
+    html += '<div class="ks-see-all-rewards" onclick="switchToTab(\x27rewards\x27)">See all ' + rewards.length + ' rewards &rarr;</div>';
   }
   document.getElementById("ks-sidebar-rewards").innerHTML = html;
 }
