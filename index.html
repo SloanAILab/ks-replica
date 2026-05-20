@@ -80,10 +80,6 @@ img { max-width: 100%; height: auto; display: block; }
   line-height: 1.4;
   margin-bottom: 12px;
 }
-.ks-creator-link {
-  font-size: 13px;
-  color: #696969;
-}
 
 /* ---- Progress & Stats ---- */
 .ks-progress-bar {
@@ -137,7 +133,7 @@ img { max-width: 100%; height: auto; display: block; }
 }
 .ks-sidebar-reward .pledge { font-size: 14px; color: #05ce78; font-weight: 600; }
 .ks-sidebar-reward .rname { font-size: 15px; font-weight: 600; color: #282828; margin-top: 6px; }
-.ks-sidebar-reward .rdesc { font-size: 13px; color: #282828; margin-top: 6px; }
+.ks-sidebar-reward .rdesc { font-size: 13px; color: #282828; margin-top: 6px; white-space: pre-line; }
 .ks-sidebar-reward .rmeta { font-size: 12px; color: #696969; margin-top: 4px; }
 .ks-sidebar-reward .rlimited {
   display: inline-block;
@@ -148,6 +144,19 @@ img { max-width: 100%; height: auto; display: block; }
   border-radius: 4px;
   margin-top: 6px;
   font-weight: 600;
+}
+.ks-see-all-rewards {
+  display: block;
+  text-align: center;
+  padding: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #05ce78;
+  cursor: pointer;
+  margin-top: 4px;
+}
+.ks-see-all-rewards:hover {
+  text-decoration: underline;
 }
 
 /* ---- Tab Bar ---- */
@@ -179,11 +188,16 @@ img { max-width: 100%; height: auto; display: block; }
 
 /* ---- Tab Content ---- */
 .ks-tab-content {
-  padding: 20px;
   min-height: 300px;
   max-height: 500px;
-  overflow-y: auto;
+  overflow-y: hidden;
   background: #FBFBFA;
+  display: flex;
+}
+.ks-tab-content.no-sidebar {
+  display: block;
+  overflow-y: auto;
+  padding: 20px;
 }
 .ks-tab-content h2, .ks-tab-content h3 {
   margin-top: 16px;
@@ -202,6 +216,43 @@ img { max-width: 100%; height: auto; display: block; }
 .ks-tab-content img {
   margin: 12px 0;
   border-radius: 4px;
+}
+
+/* ---- Section Nav (left sidebar on Campaign tab) ---- */
+.ks-section-nav {
+  width: 200px;
+  min-width: 200px;
+  padding: 16px 0;
+  overflow-y: auto;
+  border-right: 1px solid #e6e6e6;
+  background: #fff;
+}
+.ks-section-nav-item {
+  display: block;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #282828;
+  text-decoration: none;
+  border-left: 3px solid transparent;
+  cursor: pointer;
+  line-height: 1.4;
+  transition: border-color 0.15s, color 0.15s;
+}
+.ks-section-nav-item:hover {
+  color: #05ce78;
+  text-decoration: none;
+}
+.ks-section-nav-item.active {
+  border-left-color: #05ce78;
+  color: #05ce78;
+}
+
+/* ---- Campaign Content (right side when section nav is shown) ---- */
+.ks-campaign-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
 }
 
 /* ---- Rewards Tab Cards ---- */
@@ -293,6 +344,9 @@ img { max-width: 100%; height: auto; display: block; }
     border-top: 1px solid #e6e6e6;
     padding: 20px;
   }
+  .ks-section-nav {
+    display: none;
+  }
 }
 </style>
 </head>
@@ -312,7 +366,6 @@ img { max-width: 100%; height: auto; display: block; }
       <img class="ks-hero-img" id="ks-hero-img" src="" alt="">
       <div class="ks-title" id="ks-title"></div>
       <div class="ks-blurb" id="ks-blurb"></div>
-      <div class="ks-creator-link" id="ks-creator-link"></div>
     </div>
     <div class="ks-right-col">
       <div class="ks-progress-bar"><div class="ks-progress-fill" id="ks-progress"></div></div>
@@ -376,6 +429,31 @@ function init() {
   setupTabs();
 }
 
+// ---- Switch to a tab programmatically ----
+function switchToTab(tabName) {
+  // Record time on previous tab
+  var elapsed = Math.round((Date.now() - tabStartTime) / 1000);
+  var prevLabel = currentTab.charAt(0).toUpperCase() + currentTab.slice(1);
+  timeOnTabs[prevLabel] = (timeOnTabs[prevLabel] || 0) + elapsed;
+
+  currentTab = tabName;
+  tabStartTime = Date.now();
+
+  var label = currentTab.charAt(0).toUpperCase() + currentTab.slice(1);
+  if (tabsClicked.indexOf(label) === -1) tabsClicked.push(label);
+
+  var allTabs = document.querySelectorAll(".ks-tab");
+  for (var j = 0; j < allTabs.length; j++) {
+    allTabs[j].classList.remove("active");
+    if (allTabs[j].getAttribute("data-tab") === tabName) {
+      allTabs[j].classList.add("active");
+    }
+  }
+
+  renderTab();
+  sendInteraction();
+}
+
 // ---- Render Project Header ----
 function renderProject() {
   var p = currentProject;
@@ -384,7 +462,6 @@ function renderProject() {
   document.getElementById("ks-hero-img").alt = p.name;
   document.getElementById("ks-title").textContent = p.name;
   document.getElementById("ks-blurb").textContent = p.blurb;
-  document.getElementById("ks-creator-link").innerHTML = '<a href="' + escHtml(p.url) + '" target="_blank" rel="noopener">View on Kickstarter</a>';
 
   var pctClamped = Math.min(p.pct_funded, 100);
   document.getElementById("ks-progress").style.width = pctClamped + "%";
@@ -394,7 +471,7 @@ function renderProject() {
   document.getElementById("ks-backers").textContent = p.backers.toLocaleString();
   document.getElementById("ks-days").textContent = p.days_left;
 
-  // Sidebar rewards (max 5, show all regardless of availability)
+  // Sidebar rewards (max 5, full descriptions)
   var rewards = p.rewards || [];
   var shown = rewards.slice(0, 5);
   var html = "";
@@ -404,8 +481,7 @@ function renderProject() {
     html += '<div class="pledge">Pledge ' + escHtml(r.amount) + '</div>';
     html += '<div class="rname">' + escHtml(r.name) + '</div>';
     if (r.description) {
-      var desc = r.description.length > 120 ? r.description.substring(0, 120) + "..." : r.description;
-      html += '<div class="rdesc">' + escHtml(desc) + '</div>';
+      html += '<div class="rdesc">' + escHtml(r.description) + '</div>';
     }
     if (r.delivery) {
       html += '<div class="rmeta">Est. delivery: ' + formatDelivery(r.delivery) + '</div>';
@@ -421,6 +497,10 @@ function renderProject() {
     }
     html += '</div>';
   }
+  // "See all rewards" link
+  if (rewards.length > 0) {
+    html += '<div class="ks-see-all-rewards" onclick="switchToTab('rewards')">See all ' + rewards.length + ' rewards &rarr;</div>';
+  }
   document.getElementById("ks-sidebar-rewards").innerHTML = html;
 }
 
@@ -429,25 +509,7 @@ function setupTabs() {
   var tabs = document.querySelectorAll(".ks-tab");
   for (var i = 0; i < tabs.length; i++) {
     tabs[i].addEventListener("click", function() {
-      // Record time on previous tab
-      var elapsed = Math.round((Date.now() - tabStartTime) / 1000);
-      var prevLabel = currentTab.charAt(0).toUpperCase() + currentTab.slice(1);
-      timeOnTabs[prevLabel] = (timeOnTabs[prevLabel] || 0) + elapsed;
-
-      // Switch tab
-      currentTab = this.getAttribute("data-tab");
-      tabStartTime = Date.now();
-
-      var label = currentTab.charAt(0).toUpperCase() + currentTab.slice(1);
-      if (tabsClicked.indexOf(label) === -1) tabsClicked.push(label);
-
-      // Update UI
-      var allTabs = document.querySelectorAll(".ks-tab");
-      for (var j = 0; j < allTabs.length; j++) allTabs[j].classList.remove("active");
-      this.classList.add("active");
-
-      renderTab();
-      sendInteraction();
+      switchToTab(this.getAttribute("data-tab"));
     });
   }
 
@@ -464,31 +526,110 @@ function setupTabs() {
 // ---- Render Tab Content ----
 function renderTab() {
   var container = document.getElementById("ks-tab-content");
-  container.scrollTop = 0;
 
-  switch (currentTab) {
-    case "campaign":
-      container.innerHTML = currentProject.description_html || '<div class="ks-empty-state">No description available.</div>';
-      break;
-    case "rewards":
-      container.innerHTML = renderRewardsTab();
-      break;
-    case "creator":
-      container.innerHTML = renderCreatorTab();
-      break;
-    case "faq":
-      container.innerHTML = '<div class="ks-empty-state">No FAQs have been posted yet.</div>';
-      break;
-    case "updates":
-      container.innerHTML = '<div class="ks-empty-state">No updates yet.</div>';
-      break;
-    case "comments":
-      container.innerHTML = '<div class="ks-empty-state">No comments yet.</div>';
-      break;
-    case "community":
-      container.innerHTML = renderCommunityTab();
-      break;
+  if (currentTab === "campaign") {
+    // Campaign tab: two-column layout with section nav
+    container.classList.remove("no-sidebar");
+    renderCampaignTab(container);
+  } else {
+    // All other tabs: simple scrollable content
+    container.classList.add("no-sidebar");
+    container.scrollTop = 0;
+
+    switch (currentTab) {
+      case "rewards":
+        container.innerHTML = renderRewardsTab();
+        break;
+      case "creator":
+        container.innerHTML = renderCreatorTab();
+        break;
+      case "faq":
+        container.innerHTML = '<div class="ks-empty-state">No FAQs have been posted yet.</div>';
+        break;
+      case "updates":
+        container.innerHTML = '<div class="ks-empty-state">No updates yet.</div>';
+        break;
+      case "comments":
+        container.innerHTML = '<div class="ks-empty-state">No comments yet.</div>';
+        break;
+      case "community":
+        container.innerHTML = renderCommunityTab();
+        break;
+    }
   }
+}
+
+// ---- Campaign Tab with Section Nav ----
+function renderCampaignTab(container) {
+  var descHtml = currentProject.description_html || '';
+  if (!descHtml) {
+    container.classList.add("no-sidebar");
+    container.innerHTML = '<div class="ks-empty-state">No description available.</div>';
+    return;
+  }
+
+  // Build two-column layout: section nav + scrollable content
+  container.innerHTML =
+    '<nav class="ks-section-nav" id="ks-section-nav"></nav>' +
+    '<div class="ks-campaign-scroll" id="ks-campaign-scroll">' +
+    '<h2 style="margin-top:0;margin-bottom:16px;">Story</h2>' +
+    descHtml +
+    '</div>';
+
+  // Extract h3 headings from the rendered content and build nav
+  var scrollArea = document.getElementById("ks-campaign-scroll");
+  var navArea = document.getElementById("ks-section-nav");
+  var headings = scrollArea.querySelectorAll("h3");
+
+  if (headings.length === 0) {
+    // No h3 headings: hide nav, use full width
+    navArea.style.display = "none";
+    return;
+  }
+
+  var navHtml = "";
+  for (var i = 0; i < headings.length; i++) {
+    var h = headings[i];
+    var id = "ks-section-" + i;
+    h.id = id;
+    var text = h.textContent.trim();
+    if (!text) continue;
+    navHtml += '<a class="ks-section-nav-item" data-target="' + id + '">' + escHtml(text) + '</a>';
+  }
+  navArea.innerHTML = navHtml;
+
+  // Click to scroll
+  var navItems = navArea.querySelectorAll(".ks-section-nav-item");
+  for (var i = 0; i < navItems.length; i++) {
+    navItems[i].addEventListener("click", function() {
+      var targetId = this.getAttribute("data-target");
+      var target = document.getElementById(targetId);
+      if (target) {
+        target.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    });
+  }
+
+  // Scroll tracking: highlight active section
+  function updateActiveSection() {
+    var scrollTop = scrollArea.scrollTop;
+    var activeIdx = -1;
+    for (var i = 0; i < headings.length; i++) {
+      if (headings[i].offsetTop - scrollArea.offsetTop <= scrollTop + 30) {
+        activeIdx = i;
+      }
+    }
+    var items = navArea.querySelectorAll(".ks-section-nav-item");
+    for (var j = 0; j < items.length; j++) {
+      items[j].classList.remove("active");
+    }
+    if (activeIdx >= 0 && activeIdx < items.length) {
+      items[activeIdx].classList.add("active");
+    }
+  }
+
+  scrollArea.addEventListener("scroll", updateActiveSection);
+  updateActiveSection();
 }
 
 function renderRewardsTab() {
@@ -528,7 +669,6 @@ function renderCreatorTab() {
     '<div style="font-size:13px;color:#696969;margin-bottom:6px;">CREATOR</div>' +
     '<div style="font-size:18px;font-weight:600;margin-bottom:8px;">' + escHtml(p.name.split(":")[0].split(" - ")[0]) + '</div>' +
     '<div style="font-size:14px;color:#696969;margin-bottom:12px;">First created &middot; 1 backed</div>' +
-    '<a href="' + escHtml(p.url) + '" target="_blank" rel="noopener" style="font-size:14px;">View project on Kickstarter &rarr;</a>' +
     '</div>';
 }
 
@@ -560,10 +700,11 @@ function formatDelivery(dateStr) {
 
 // ---- postMessage to Qualtrics ----
 function sendInteraction() {
-  var contentEl = document.getElementById("ks-tab-content");
+  // Try to get scroll depth from whichever scroll container is active
+  var scrollEl = document.getElementById("ks-campaign-scroll") || document.getElementById("ks-tab-content");
   var scrollDepth = 0;
-  if (contentEl.scrollHeight > contentEl.clientHeight) {
-    scrollDepth = Math.round((contentEl.scrollTop / (contentEl.scrollHeight - contentEl.clientHeight)) * 100) / 100;
+  if (scrollEl && scrollEl.scrollHeight > scrollEl.clientHeight) {
+    scrollDepth = Math.round((scrollEl.scrollTop / (scrollEl.scrollHeight - scrollEl.clientHeight)) * 100) / 100;
   }
   try {
     window.parent.postMessage({
@@ -581,7 +722,7 @@ var scrollTimer = null;
 document.getElementById("ks-tab-content").addEventListener("scroll", function() {
   if (scrollTimer) clearTimeout(scrollTimer);
   scrollTimer = setTimeout(sendInteraction, 500);
-});
+}, true);  // useCapture to catch child scroll events too
 
 // Send final interaction on unload
 window.addEventListener("beforeunload", function() {
