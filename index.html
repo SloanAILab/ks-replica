@@ -123,42 +123,6 @@ img { max-width: 100%; height: auto; display: block; }
   cursor: default;
 }
 
-/* ---- Sidebar Reward Cards ---- */
-.ks-sidebar-reward {
-  border: 1px solid #e6e6e6;
-  border-radius: 8px;
-  padding: 16px;
-  margin-bottom: 10px;
-  background: #fff;
-}
-.ks-sidebar-reward .pledge { font-size: 14px; color: #05ce78; font-weight: 600; }
-.ks-sidebar-reward .rname { font-size: 15px; font-weight: 600; color: #282828; margin-top: 6px; }
-.ks-sidebar-reward .rdesc { font-size: 13px; color: #282828; margin-top: 6px; white-space: pre-line; }
-.ks-sidebar-reward .rmeta { font-size: 12px; color: #696969; margin-top: 4px; }
-.ks-sidebar-reward .rlimited {
-  display: inline-block;
-  background: #fef3c7;
-  color: #92400e;
-  font-size: 11px;
-  padding: 2px 8px;
-  border-radius: 4px;
-  margin-top: 6px;
-  font-weight: 600;
-}
-.ks-see-all-rewards {
-  display: block;
-  text-align: center;
-  padding: 10px;
-  font-size: 14px;
-  font-weight: 600;
-  color: #05ce78;
-  cursor: pointer;
-  margin-top: 4px;
-}
-.ks-see-all-rewards:hover {
-  text-decoration: underline;
-}
-
 /* ---- Tab Bar ---- */
 .ks-tabs {
   display: flex;
@@ -189,7 +153,7 @@ img { max-width: 100%; height: auto; display: block; }
 /* ---- Tab Content ---- */
 .ks-tab-content {
   min-height: 300px;
-  max-height: 500px;
+  max-height: 700px;
   overflow-y: auto;
   background: #FBFBFA;
   padding: 20px;
@@ -377,7 +341,6 @@ img { max-width: 100%; height: auto; display: block; }
       <div class="ks-stat-value" id="ks-days"></div>
       <div class="ks-stat-label">days to go</div>
       <div class="ks-back-btn">Back this project</div>
-      <div id="ks-sidebar-rewards"></div>
     </div>
   </div>
 
@@ -471,28 +434,6 @@ function renderProject() {
   document.getElementById("ks-backers").textContent = p.backers.toLocaleString();
   document.getElementById("ks-days").textContent = p.days_left;
 
-  // Sidebar rewards (compact: amount + name only, max 5)
-  var rewards = p.rewards || [];
-  var shown = rewards.slice(0, 5);
-  var html = "";
-  for (var i = 0; i < shown.length; i++) {
-    var r = shown[i];
-    html += '<div class="ks-sidebar-reward">';
-    html += '<div class="pledge">Pledge ' + escHtml(r.amount) + '</div>';
-    html += '<div class="rname">' + escHtml(r.name) + '</div>';
-    if (r.backers) {
-      html += '<div class="rmeta">' + r.backers.toLocaleString() + ' backer' + (r.backers !== 1 ? 's' : '') + '</div>';
-    }
-    if (r.limit && r.remaining != null) {
-      html += '<div class="rlimited">Limited: ' + r.remaining + ' of ' + r.limit + ' remaining</div>';
-    }
-    html += '</div>';
-  }
-  // "See all rewards" link -> switches to Rewards tab
-  if (rewards.length > 0) {
-    html += '<div class="ks-see-all-rewards" onclick="switchToTab(\x27rewards\x27)">See all ' + rewards.length + ' rewards &rarr;</div>';
-  }
-  document.getElementById("ks-sidebar-rewards").innerHTML = html;
 }
 
 // ---- Tab Switching ----
