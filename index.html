@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kickstarter Project</title>
+<style>
+/* ---- Reset & Base ---- */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  background: #fff;
+  color: #282828;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: #05ce78; text-decoration: none; }
+a:hover { text-decoration: underline; }
+img { max-width: 100%; height: auto; display: block; }
+
+/* ---- Nav Bar ---- */
+.ks-nav {
+  background: #fff;
+  border-bottom: 1px solid #e6e6e6;
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.ks-logo {
+  color: #05ce78;
+  font-weight: 700;
+  font-size: 18px;
+  letter-spacing: -0.5px;
+}
+.ks-category-badge {
+  background: #f2f2f2;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  color: #696969;
+}
+.ks-staff-pick {
+  font-size: 12px;
+  color: #696969;
+}
+
+/* ---- Project Header (two-column) ---- */
+.ks-project-header {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid #e6e6e6;
+}
+.ks-left-col {
+  width: 60%;
+  padding: 20px;
+}
+.ks-right-col {
+  width: 40%;
+  padding: 20px 20px 20px 10px;
+  border-left: 1px solid #e6e6e6;
+}
+.ks-hero-img {
+  width: 100%;
+  border-radius: 4px;
+  margin-bottom: 16px;
+}
+.ks-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: #282828;
+  line-height: 1.3;
+  margin-bottom: 8px;
+}
+.ks-blurb {
+  font-size: 15px;
+  color: #696969;
+  font-style: italic;
+  line-height: 1.4;
+  margin-bottom: 12px;
+}
+.ks-creator-link {
+  font-size: 13px;
+  color: #696969;
+}
+
+/* ---- Progress & Stats ---- */
+.ks-progress-bar {
+  background: #e6e6e6;
+  border-radius: 3px;
+  height: 6px;
+  width: 100%;
+  margin-bottom: 8px;
+}
+.ks-progress-fill {
+  background: #05ce78;
+  border-radius: 3px;
+  height: 6px;
+}
+.ks-pct-funded {
+  font-size: 13px;
+  color: #696969;
+  margin-bottom: 14px;
+}
+.ks-stat-value {
+  font-size: 22px;
+  font-weight: 700;
+}
+.ks-stat-value.green { color: #05ce78; }
+.ks-stat-label {
+  font-size: 13px;
+  color: #696969;
+  margin-bottom: 12px;
+}
+
+/* ---- Back Button ---- */
+.ks-back-btn {
+  background: #05ce78;
+  color: #fff;
+  text-align: center;
+  padding: 12px 0;
+  border-radius: 3px;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  cursor: default;
+}
+
+/* ---- Sidebar Reward Cards ---- */
+.ks-sidebar-reward {
+  border: 1px solid #e6e6e6;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 10px;
+  background: #fff;
+}
+.ks-sidebar-reward .pledge { font-size: 14px; color: #05ce78; font-weight: 600; }
+.ks-sidebar-reward .rname { font-size: 15px; font-weight: 600; color: #282828; margin-top: 6px; }
+.ks-sidebar-reward .rdesc { font-size: 13px; color: #282828; margin-top: 6px; }
+.ks-sidebar-reward .rmeta { font-size: 12px; color: #696969; margin-top: 4px; }
+.ks-sidebar-reward .rlimited {
+  display: inline-block;
+  background: #fef3c7;
+  color: #92400e;
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  margin-top: 6px;
+  font-weight: 600;
+}
+
+/* ---- Tab Bar ---- */
+.ks-tabs {
+  display: flex;
+  border-bottom: 1px solid #e6e6e6;
+  background: #fff;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.ks-tab {
+  padding: 14px 20px;
+  font-size: 14px;
+  color: #696969;
+  cursor: pointer;
+  white-space: nowrap;
+  border-bottom: 2px solid transparent;
+  transition: color 0.15s, border-color 0.15s;
+  user-select: none;
+}
+.ks-tab:hover {
+  color: #282828;
+}
+.ks-tab.active {
+  color: #05ce78;
+  font-weight: 600;
+  border-bottom-color: #05ce78;
+}
+
+/* ---- Tab Content ---- */
+.ks-tab-content {
+  padding: 20px;
+  min-height: 300px;
+  max-height: 500px;
+  overflow-y: auto;
+  background: #FBFBFA;
+}
+.ks-tab-content h2, .ks-tab-content h3 {
+  margin-top: 16px;
+  margin-bottom: 8px;
+}
+.ks-tab-content p {
+  margin-bottom: 12px;
+}
+.ks-tab-content ul, .ks-tab-content ol {
+  margin-left: 20px;
+  margin-bottom: 12px;
+}
+.ks-tab-content li {
+  margin-bottom: 4px;
+}
+.ks-tab-content img {
+  margin: 12px 0;
+  border-radius: 4px;
+}
+
+/* ---- Rewards Tab Cards ---- */
+.ks-reward-card {
+  border: 1px solid #e6e6e6;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 16px;
+  background: #fff;
+}
+.ks-reward-card .pledge {
+  font-size: 18px;
+  color: #05ce78;
+  font-weight: 700;
+}
+.ks-reward-card .rname {
+  font-size: 17px;
+  font-weight: 600;
+  color: #282828;
+  margin-top: 8px;
+}
+.ks-reward-card .rdesc {
+  font-size: 14px;
+  color: #282828;
+  margin-top: 10px;
+  line-height: 1.5;
+  white-space: pre-line;
+}
+.ks-reward-card .rmeta {
+  font-size: 13px;
+  color: #696969;
+  margin-top: 8px;
+}
+.ks-reward-card .rlimited {
+  display: inline-block;
+  background: #fef3c7;
+  color: #92400e;
+  font-size: 12px;
+  padding: 3px 10px;
+  border-radius: 4px;
+  margin-top: 8px;
+  font-weight: 600;
+}
+.ks-reward-card .rbacker-count {
+  font-size: 13px;
+  color: #696969;
+  margin-top: 8px;
+}
+.ks-reward-card .rselect-btn {
+  display: inline-block;
+  margin-top: 12px;
+  padding: 8px 20px;
+  background: #05ce78;
+  color: #fff;
+  border-radius: 3px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: default;
+}
+
+/* ---- Empty State ---- */
+.ks-empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: #696969;
+  font-size: 15px;
+}
+
+/* ---- Container ---- */
+.ks-container {
+  max-width: 800px;
+  margin: 0 auto;
+  border: 1px solid #e6e6e6;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fff;
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 600px) {
+  .ks-project-header {
+    flex-direction: column;
+  }
+  .ks-left-col, .ks-right-col {
+    width: 100%;
+    border-left: none;
+  }
+  .ks-right-col {
+    border-top: 1px solid #e6e6e6;
+    padding: 20px;
+  }
+}
+</style>
+</head>
+<body>
+
+<div class="ks-container" id="ks-app">
+  <!-- Nav -->
+  <div class="ks-nav">
+    <span class="ks-logo">kickstarter</span>
+    <span class="ks-category-badge" id="ks-category"></span>
+    <span class="ks-staff-pick">&hearts; Projects We Love</span>
+  </div>
+
+  <!-- Project Header -->
+  <div class="ks-project-header">
+    <div class="ks-left-col">
+      <img class="ks-hero-img" id="ks-hero-img" src="" alt="">
+      <div class="ks-title" id="ks-title"></div>
+      <div class="ks-blurb" id="ks-blurb"></div>
+      <div class="ks-creator-link" id="ks-creator-link"></div>
+    </div>
+    <div class="ks-right-col">
+      <div class="ks-progress-bar"><div class="ks-progress-fill" id="ks-progress"></div></div>
+      <div class="ks-pct-funded" id="ks-pct-funded"></div>
+      <div class="ks-stat-value green" id="ks-pledged"></div>
+      <div class="ks-stat-label" id="ks-pledge-label"></div>
+      <div class="ks-stat-value" id="ks-backers"></div>
+      <div class="ks-stat-label">backers</div>
+      <div class="ks-stat-value" id="ks-days"></div>
+      <div class="ks-stat-label">days to go</div>
+      <div class="ks-back-btn">Back this project</div>
+      <div id="ks-sidebar-rewards"></div>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="ks-tabs" id="ks-tabs">
+    <div class="ks-tab active" data-tab="campaign">Campaign</div>
+    <div class="ks-tab" data-tab="rewards">Rewards</div>
+    <div class="ks-tab" data-tab="creator">Creator</div>
+    <div class="ks-tab" data-tab="faq">FAQ</div>
+    <div class="ks-tab" data-tab="updates">Updates</div>
+    <div class="ks-tab" data-tab="comments">Comments</div>
+    <div class="ks-tab" data-tab="community">Community</div>
+  </div>
+
+  <!-- Tab Content -->
+  <div class="ks-tab-content" id="ks-tab-content"></div>
+</div>
+
+<script>
+// ---- Project Data (injected by build_replica.py) ----
+var PROJECTS = [{"id": 1, "name": "Moverse Capture for VRChat: Strap-Free Full-Body Tracking", "category": "Technology", "days_left": 10, "goal_usd": 57226, "pledged_usd": 26324, "pct_funded": 46.0, "backers": 29, "blurb": "Strap-free Full-Body Tracking in VRChat. No Straps. No IMU Drift. No Batteries. Studio-grade strap-free FBT, made for your room!", "url": "https://www.kickstarter.com/projects/moverse/moverse-capture-for-vrchat-strap-free-full-body-tracking", "image_url": "https://mit.co1.qualtrics.com/ControlPanel/Graphic.php?IM=IM_g25McuKcudj8JQs", "deadline": "2026-05-16", "description_html": "<div>\n<div>\n\n<img alt=\"\" src=\"https://i.kickstarter.com/assets/053/190/210/63ba1065112539c9e2b37d020e1e4e5f_original.png?fit=scale-down&amp;origin=ugc&amp;q=100&amp;v=1775121041&amp;width=680&amp;sig=Zx%2BfmSOYod0yVgI%2FcO7rpePt0ta56n5zgPyYcvzqYi0%3D\">\n\n\n</div>\n\n<p>For too long, the dream of true VR immersion has been trapped behind a wall of friction. We’ve all been promised a world where our virtual bodies move exactly like our real ones, but the reality has been anything but seamless. It’s been a world of velcro straps, \"battery farm\" management, and constant, immersion-breaking drift of wearable sensors.</p><br>\n<p>We believe you shouldn't have to \"gear up\" just to be yourself.</p><br>\n<div>\n\n<img alt=\"\" src=\"https://i.kickstarter.com/assets/053/190/838/be51a0213d367c32c8079ad14178c602_original.png?fit=scale-down&amp;origin=ugc&amp;q=100&amp;v=1775124472&amp;width=680&amp;sig=oTr2UE2L%2BJmgdwXIFoiKvlfjL39rdQvi6dKeHg%2BzVR8%3D\">\n\n\n</div>\n\n<h3>\n<br>Full-body tracking without the straps\n</h3>\n<p>Moverse Capture for VRChat, or Moverse Capture VRC for short, is a markerless motion capture solution designed specifically for the Social VR community. Powered by advanced computer vision and a streamlined three-camera array, it does what was once thought impossible: It eliminates the hardware from the human.</p><br>\n<ul>\n<li>\nZero Straps: No more wrestling with elastics or adjusting trackers mid-dance.</li>\n<li>\nZero Batteries: Your body is the tracker. It never needs to be plugged in.</li>\n<li>\nZero Drift: Move for hours, days, or weeks! Your avatar’s feet will stay exactly where yours are.</li>\n</ul>\n<h3>\n<br>Bringing Studio-Grade Tech to Your Personal Space\n</h3>\n<p>Our mission was simple: take the quality of Moverse Capture, the same technology used in professional motion capture studios, and shrink it down for the home user.</p><br>\n<p>Full-body tracking has typically been a trade-off between precision and ease of use. Our goal was to eliminate that compromise by bringing the simplicity of markerless studio technology into a form factor that fits seamlessly into your home environment.</p><br>\n<h3>\n<br>Why Now?\n</h3>\n<p>The shift toward markerless tracking is the result of years of refinement in computer vision and deep learning. As these technologies have matured and gained adoption across the entertainment and gaming industries, the feedback from professional creators has allowed us to bridge the gap to the home user. Today, we can achieve robust, high-fidelity tracking using a streamlined 3-camera setup, bringing a once-specialized technology into a form factor that finally fits the needs of the Social VR community.</p><br>\n<p>The wait for true freedom is over. Step into your avatar. We’ll handle the rest.</p><br>\n<h3>\n<br>How Did We Get the Idea?\n</h3>\n<p>It started at GDC 2025 in San Francisco. We were showcasing our professional, studio-grade motion capture system when members of the VRChat team stopped by our booth. After seeing the fluidity of our markerless tracking, they posed a challenge:</p><br>\n<p><em>\"Could you bring this level of freedom to the VRChat community?\"</em></p><br>\n<p>That conversation changed everything. We dove headfirst into the world of Social VR to understand the daily frustrations of FBT. What we found was a massive compromise: users were forced to choose between deep immersion and physical discomfort.</p><br>\n<p>We spent the following year adapting our studio-grade technology to work in everyday living rooms. We shifted the complexity from the hardware to the software, replacing markers and straps with a zero-wearable product.</p><br>\n<h3>\n<br>The \"Wearables\" Hassle\n</h3>\n<div>\n\n<img alt=\"\" src=\"https://i.kickstarter.com/assets/053/191/520/9f57bcefe8099c0cbdc76797b4f70af4_original.png?fit=scale-down&amp;origin=ugc&amp;q=100&amp;v=1775129199&amp;width=680&amp;sig=WpZQGJnwSdLRCb49hI3L%2FwCiM%2B8HHBBF4GnCGC7h3c4%3D\">\n\n\n</div>\n\n<p>Most current FBT systems rely on wearable sensors. While they’ve been the standard for years, they come with a specific set of hardware and software trade-offs.</p><br>\n<ul>\n<li>\nSetup &amp; Comfort: Using traditional FBT requires putting on several straps and positioning sensors across your body. This takes time to set up and can be difficult to keep aligned during active movement or long sessions.</li>\n<li>\nBattery Management: Each sensor has its own battery that needs to be monitored. If one tracker dies - especially if it’s the beacon - the tracking stops working, and you have to take a break to recharge.</li>\n<li>\nTechnical Drift: Because these sensors calculate your position based on internal motion rather than a camera's view, they naturally \"drift\" over time. This leads to your avatar’s feet or hips slowly sliding out of place, requiring you to stop and recalibrate frequently.</li>\n</ul>\n<p>Moverse was built to retire the ritual. Your body is the tracker. No straps. No batteries. No drift.</p><br>\n<h3>\n<br>Moverse Capture VRC: Studio Power, Home Footprint\n</h3>\n<p>Our professional Moverse Capture setup typically relies on an 8-to-16-camera array to cover large spaces and multiple users. Our challenge was to condense that heavy-duty power into a streamlined, 3-camera configuration without losing the quality of the tracking.</p><br>\n<p>Through progressive experimentation, we optimized the system to operate robustly in a standard home environment. Thanks to the modular architecture of Moverse Capture, the transition was smoother than we imagined; the underlying technology scaled well into a lightweight, home-friendly footprint.</p><br>\n<h3>\n<br>VRChat &amp; Ecosystem Integration\n</h3>\n<p>The final piece of the puzzle was the handshake between our tech and your virtual world. We developed a dedicated streaming component built specifically for VRChat, using the OSC protocol to ensure your avatar mirrors your real-world fluidity with 1:1 precision.</p><br>\n<p>To give you even more flexibility, we have added SteamVR support on our roadmap. This allows you to combine Moverse Capture VRC with your existing VR hardware into a single, unified stream. By bridging these platforms, we are ensuring that Moverse Capture VRC works seamlessly with your current setup today while staying ready for the social VR applications of tomorrow.</p><br>\n<div>\n\n<img alt=\"\" src=\"https://i.kickstarter.com/assets/053/189/961/eb728c7dabf33a395e1855aaf1ed8101_original.png?fit=scale-down&amp;origin=ugc&amp;q=100&amp;v=1775119520&amp;width=680&amp;sig=bhNTLOtVh5IKISd8YUBXHkCbbR9UG9sNfRgWomxqYug%3D\">\n\n\n</div>\n\n<h3>How it Works</h3>\n<div>\n\n<img alt=\"\" src=\"https://i.kickstarter.com/assets/053/190/397/63147ff1ab6e2da32966367236dfaeac_original.png?fit=scale-down&amp;origin=ugc&amp;q=100&amp;v=1775122182&amp;width=680&amp;sig=XvATQzIlh0j46b5T48e37zBVyjj6EvrpuDZX7JuHm7U%3D\">\n\n\n</div>\n\n<p>We’ve stripped away the complexity. No temperamental inter-sensor communication, no charging of batteries, and no velcro straps.</p><br>\n<ol><li>\nPosition Your Cameras: Place your 3 cameras around your play area. Whether they’re on tripods or wall mounts, just point them toward your space.</li></ol>\n<ul>\n<li>\nInstant Space Mapping: Open the Moverse Capture VRC app and move the included calibration board in front of the cameras for a few seconds, then place it on the floor.</li>\n<li>\nStep Into Your Avatar: Click the body tracking icon – and that’s it! Moverse is now streaming high-fidelity motion data to VRChat. Hit \"Calibrate\" in your VRChat menu, take a T-pose, and you are ready to move without limits.</li>\n</ul>\n<h3>\n<br>Features\n</h3>\n<div>\n\n<img alt=\"\" src=\"https://i.kickstarter.com/assets/053/189/984/da005e6bac6326d4cda603f485577ebe_original.png?fit=scale-down&amp;origin=ugc&amp;q=100&amp;v=1775119681&amp;width=680&amp;sig=qSWE5P9XWoLS2tBxcs5B6VMiIhr2%2FCJ2%2Fc67BkfaTzM%3D\">\n\n\n</div>\n\n<p>\n<br>Privacy by Design\n</p><br>\n<p>We understand that bringing cameras into your private play space requires absolute trust. Moverse Capture VRC was built with a Privacy-First architecture. Our system is designed to track your movement, not your life.</p><br>\n<p>Local Processing, Zero Cloud: Unlike many smart-home devices, Moverse Capture VRC does not stream your video feed to the cloud. All processing happens locally on your PC. Your room stays in your room.</p><br>\n<p>Data vs. Imagery: The Moverse Capture VRC software converts camera frames into mathematical coordinates (OSC data) almost instantly.</p><br>\n<ul>\n<li>\nWhat stays: Only the geometry values relevant with your joint movements are sent to VRChat.</li>\n<li>\nWhat is deleted: The raw video frames used for calculation are discarded immediately after the joint values are extracted. We do not store video files, and we do not have \"remote access\" to your cameras.</li>\n</ul>\n<p>Physical Peace of Mind: Because our system uses independent, USB-connected cameras, you have total physical control.</p><br>\n<ul>\n<li>\nHardware Disconnect: When you aren't in VR, simply unplug the cameras or turn them toward the wall.</li>\n<li>\nNo Hidden Microphones: Our certified Luxonis sensors are dedicated to high-speed vision processing; we do not record or transmit audio.</li>\n</ul>\n<p>Transparency: Moverse Capture VRC is a tool for immersion, not data collection. None of your data is used to train AI models. We do not have access to your movement, we cannot share any data with third parties, and our software operates with minimal permissions required to function with VRChat and your OS. </p><br>\n<h3>\n<br>Comparison Table\n</h3>\n<a href=\"https://storage.googleapis.com/public_moverse/vrchat/comparison.png\"><div>\n\n<img alt=\"\" src=\"https://i.kickstarter.com/assets/053/192/720/8f616d2294c00b47eb30204187c59727_original.png?fit=scale-down&amp;origin=ugc&amp;q=100&amp;v=1775136946&amp;width=680&amp;sig=5kp1bYk8i1Pzwygj01SjDwyIs2KkvyvZI%2BjJwoJ9rIk%3D\">\n\n\n</div>\n</a><h3>\n<br><br>Reviews &amp; Demos\n</h3>\n<div href=\"https://youtu.be/qpCq7O9liag\">\n\n\n</div>\n\n<div href=\"https://youtu.be/etdi45Y3AIY\">\n\n\n</div>\n\n<div href=\"https://youtu.be/Ik_tKrurTts\">\n\n\n</div>\n\n<h3>\n<br><br>The Technicals\n</h3>\n<div>\n\n<img alt=\"\" src=\"https://i.kickstarter.com/assets/053/194/467/542aa87593de22df367ac1efd51779cb_original.png?fit=scale-down&amp;origin=ugc&amp;q=100&amp;v=1775146654&amp;width=680&amp;sig=pFBtN%2FJjVfw8WTLIceW8ZRFQOUmm4QJKUuRWQaYjQEI%3D\">\n\n\n</div>\n\n<h3>\n<br><br>What’s in the box\n</h3>\n<div>\n\n<img alt=\"\" src=\"https://i.kickstarter.com/assets/053/190/708/5c8069f58b6a80b0d17dc82c1fd04c36_original.png?fit=scale-down&amp;origin=ugc&amp;q=100&amp;v=1775123784&amp;width=680&amp;sig=3koxrCZUuqUb6aHvFExhDQ4TkcnUEDQDZC6pHdOPyHo%3D\">\n\n\n</div>\n\n<p>Luxonis OAK-1 W: Paired with a wide field-of-view camera module, OAK-1 captures more in one shot, for scenarios where large area coverage comes in handy.</p><br>\n<div>\n\n<img alt=\"\" src=\"https://i.kickstarter.com/assets/053/191/396/30df83f10dd561a3045c75628ee40e88_original.png?fit=scale-down&amp;origin=ugc&amp;q=100&amp;v=1775128232&amp;width=680&amp;sig=NpCScuGdTyf2Kp7P2YIlo9BS%2Fifc1ZvLmI7Dh75x7Pc%3D\">\n\n\n</div>\n\n<p>USB3 Extension Cable: This 2-meter (6.5ft) USB 3.0 extender gives you the flexibility to position your cameras exactly where you need them, without being tethered by the camera cable.</p><br>\n<div>\n\n<img alt=\"\" src=\"https://i.kickstarter.com/assets/053/190/726/26773ce2bf2f3b5d94abce22b6c930cc_original.png?fit=scale-down&amp;origin=ugc&amp;q=100&amp;v=1775123855&amp;width=680&amp;sig=2AcCFOp%2FLgyd3oF0wmKggP%2Fp7bh%2BXfFH22hPQSnPnaA%3D\">\n\n\n</div>\n\n<p>Calibration Board: A PVC board featuring a printed ArUco marker, designed specifically for multi-camera and origin calibration. Dimensions are equivalent to a standard A4 paper.</p><br>\n<div>\n\n<img alt=\"\" src=\"https://i.kickstarter.com/assets/053/192/289/5e8eabb92208cc5b3ff6706788beb222_original.png?fit=scale-down&amp;origin=ugc&amp;q=100&amp;v=1775134295&amp;width=680&amp;sig=ysOJuhm4Y1j4tmRbRxH61NpDnrkUINP2oRQ7KSiTXOw%3D\">\n\n\n</div>\n\n<p>Turtle Case: A custom-made case that is virtually unbreakable, dent-resistant and shatter-resistant. This case is available ONLY in the Supporter Kit</p><br>\n<h3>\n<br>Rewards\n</h3>\n<p>Important Note: All prices in the campaign are before taxes.<br>Important Note: Kits do not include tripods or other camera mounts.</p><br>\n<div>\n\n<img alt=\"\" src=\"https://i.kickstarter.com/assets/053/190/311/72a9b7f0a8ec270d1f420126b155d9e8_original.png?fit=scale-down&amp;origin=ugc&amp;q=100&amp;v=1775121659&amp;width=680&amp;sig=LYxjcK3CG%2Bb34KqHcJSi%2Fatd%2BUVqg9dgmV5API12YXE%3D\">\n\n\n</div>\n\n<p>Instructions for building a DIY kit with the software-only reward:<br>- <a href=\"https://shop.luxonis.com/products/oak-1-w?srsltid=AfmBOooTGNQrQD7ZbnqwUkEcgti9nrRZ-prA3Z9bSSVfXFH5qBvsAiwL\">OAK-1 W camera</a> (3x required)<br>- <a href=\"https://storage.googleapis.com/public_moverse/vrchat/calibration_side_A_litemarker.pdf\">ArUco calibration file</a> (print on paper)<br>- Any USB3 extension cable</p><br>\n<div>\n\n<img alt=\"\" src=\"https://i.kickstarter.com/assets/053/190/314/68448604bdf76fe497ad203e4dc2ca44_original.png?fit=scale-down&amp;origin=ugc&amp;q=100&amp;v=1775121668&amp;width=680&amp;sig=zGT%2FK%2Fi4EU0e1Di5JSGZqS70JaJ2TTQABFdLqa7YKtc%3D\">\n\n\n</div>\n\n<div>\n\n<img alt=\"\" src=\"https://i.kickstarter.com/assets/053/190/315/365c3a4a51c62946d56d49688c0df205_original.png?fit=scale-down&amp;origin=ugc&amp;q=100&amp;v=1775121674&amp;width=680&amp;sig=%2FWzLRsxElGy5%2BAYy%2FH6CQK1cqOaoujOdTTCcwD3%2FiSk%3D\">\n\n\n</div>\n\n<h3>\n<br><br>Timeline\n</h3>\n<p><a href=\"https://moverse.ai/vrchat/#timeline\"><img src=\"https://i.kickstarter.com/assets/053/190/091/31f2bcc240c0035e71b598126699dfa8_original.png?fit=scale-down&amp;origin=ugc&amp;q=92&amp;v=1775120364&amp;width=1212&amp;sig=qDdy5Q0DGsrbA%2FBBfBba%2BmD%2BCqod7vCdgJEsKE9RKcI%3D\"></a></p><br>\n<h3>\n<br>Shipping Costs\n</h3>\n<p>Due to the volatility of global logistics and ongoing international conflicts, precise shipping costs cannot be determined at this time. We currently provide a preliminary estimate and will share transparent updates as we approach our delivery window.</p><br>\n<h3>\n<br>Why We Need Your Support\n</h3>\n<p>We aren’t starting from scratch. The core Moverse engine is already developed, battle-tested, and refined through our work in professional motion capture.</p><br>\n<p>The main tracking software is ready, but we aim to integrate new features like the simplified calibration and SteamVR streaming. Now, we need your help to bring the hardware to life. Your support on Kickstarter will allow us to:</p><br>\n<ul>\n<li>\nSecure Manufacturing: Fund the minimum order quantities for our certified Luxonis camera arrays and custom internal components.</li>\n<li>\nScale Production: Cover the specialized assembly, calibration, and quality-control costs required for a high-precision optical system.</li>\n<li>\nRefine the Experience: While the tracking is rock-solid, your backing allows us to dedicate the final months of development to polishing the UI, expanding documentation, and ensuring a \"plug-and-play\" experience for every user.</li>\n</ul>\n<p>By backing Moverse, you help bring this idea to life and shape the future of the company. Together, we can make high-fidelity, markerless tracking accessible to the entire community!</p><br>\n<div>\n\n<img alt=\"\" src=\"https://i.kickstarter.com/assets/053/190/218/59528d1ba074f2068b678f3e84630dcc_original.png?fit=scale-down&amp;origin=ugc&amp;q=100&amp;v=1775121098&amp;width=680&amp;sig=iHDYW6A7lw%2FNimccsH%2BtxfISdO%2BLwjztfsY2u%2FndDw0%3D\">\n\n\n</div>\n\n<p> 🔗<a href=\"https://moverse.ai/vrchat/\">Moverse Capture VRC website</a>                   🔗<a href=\"https://discord.gg/bQc7B6qSPd\">Discord Community Server</a></p><br>\n<h3><br><br>Warranty &amp; Return Policy\n</h3>\n<p>At Moverse, we are committed to quality. Our system utilizes professional-grade Luxonis camera arrays—precision-calibrated hardware designed for high-performance AI and computer vision. Because these components represent the core value of your purchase, our policies are designed to protect both the user and the integrity of the technology.</p><br>\n<p>14-Day \"No Questions Asked\" Return Policy</p><br>\n<p>We want you to be completely satisfied with your Moverse experience. You may return your order within 14 days of delivery for a refund.</p><br>\n<ul>\n<li>\nCondition: To receive a full refund, the product must be returned in its original packaging with all components (Cameras, Calibration Board, Cables) in \"like-new\" condition.</li>\n<li>\nRestocking &amp; Damages: As the Luxonis cameras are high-precision optical instruments, units returned with scratches on the lenses, tampered housings, or signs of wear beyond normal inspection may be subject to a deduction from the refund to cover component replacement.</li>\n<li>\nShipping: Customers are responsible for return shipping costs. We recommend using a tracked and insured service.</li>\n</ul>\n<p>Limited Warranty</p><br>\n<p>We stand behind our hardware. Our warranty covers manufacturing defects and hardware failures under normal operating conditions.</p><br>\n<ul>\n<li>\nEU Customers: Includes a 2-year statutory warranty covering manufacturing defects under normal use.</li>\n<li>\nNon-EU Customers: Includes a 1-year limited hardware warranty covering manufacturing defects under normal use.</li>\n</ul>\n<p><em>What is Covered:</em></p><br>\n<ul>\n<li>Internal electronic failure of the sensors.</li>\n<li>Manufacturing defects in the camera housing or stands.</li>\n<li>Technical defects in the provided cables or internal ports.</li>\n</ul>\n<p><em>What is Not Covered:</em></p><br>\n<ul>\n<li>\nOptical &amp; Physical Damage: Scratches, cracks, or pits on the camera lenses; damage from accidental drops or improper cleaning.</li>\n<li>\nEnvironmental &amp; Misuse: Damage from liquid spills, extreme heat, or mounting the cameras in unstable positions.</li>\n<li>\nModifications: Any attempt to open the camera modules or modify the internal firmware will void the warranty.</li>\n</ul>\n<p><br> </p><br>\n</div><br><br><h3>Risks and Challenges</h3>Creating hardware is complex, but we have a massive head start: Moverse Capture VRC is built entirely on our mature, professional enterprise system. The core tech is already solved. For the jump to mass production, here is our transparent plan to handle potential risks:\n\n1. Supply Chain & Components\n\nThe Risk: Delays, discontinued parts, or sudden price spikes for critical components like our high-performance USB cameras.\n\nOur Plan: We have fully vetted backup suppliers for all key parts and built a 15% contingency buffer into our funding goal to absorb unexpected costs without impacting your delivery.\n\n2. Manufacturing & Quality Control\n\nThe Risk: Receiving a bad batch of parts or encountering assembly issues.\n\nOur Plan: We partner directly with Luxonis for our core camera hardware, relying on their stringent factory testing and comprehensive Dead on Arrival (DOA) replacement policy. For the rest of the kit, we conduct our own rigorous diagnostic checks during final assembly to ensure every component works perfectly together before sealing the box.\n\n3. Software Compatibility\n\nThe Risk: Unforeseen bugs or driver conflicts caused by the endless variety of PC hardware setups.\n\nOur Plan: Before the public release, we will run a closed beta with select backers to stress-test the software across a wide range of PC builds. Post-launch, we are fully committed to long-term support and regular updates.\n\n4. Fulfillment & Shipping\n\nThe Risk: Customs delays, international shipping roadblocks, or lost packages.\n\nOur Plan: We are bypassing standard international shipping bottlenecks by utilizing established distribution partners in major global hubs (including the US, Canada, and South Korea). These local experts are committed to handling country-specific logistics and customs, ensuring a much faster, smoother, and more reliable delivery process directly to your door.\n\nOur Commitment to You\nIf we hit a roadblock, you will be the first to know. We are 100% committed to transparency and will post regular, honest updates every step of the way, from the factory floor to your front door.", "rewards": [{"name": "EARLY BIRD - Individual Licence", "amount": "€199", "description": "⚡️50% OFF €399MSRP (save €200).\n\nATTENTION: In case you buy this reward, it is up to you to find the hardware requirements to operate the software. You will need 3 x Luxonis OAK-1 W and the calibration board to run and the calibrate the system.", "delivery": "2026-09-01", "shipping": null, "backers": 2, "limit": 20, "remaining": 18, "available": false}, {"name": "Moverse Capture Individual License", "amount": "€299", "description": "⚡️25% OFF €399MSRP (save €100).\n\nATTENTION: In case you buy this reward, it is up to you to find the hardware requirements to operate the software. You will need 3 x Luxonis OAK-1 W and the calibration board to run and the calibrate the system.", "delivery": "2026-09-01", "shipping": null, "backers": 0, "limit": 100, "remaining": 100, "available": false}, {"name": "EARLY BIRD - Full Starter Kit", "amount": "€699", "description": "⚡️22% OFF €899 MSRP (save €200).\n\n⚡️Excludes shipping fee.\n⚡️Includes taxes and duties for EU. \n⚡️Excludes taxes and duties for the rest of the markets.", "delivery": "2026-09-01", "shipping": "Only certain countries", "backers": 19, "limit": 20, "remaining": 1, "available": false}, {"name": "Full Starter Kit", "amount": "€799", "description": "⚡️12% OFF €899 MSRP (save €100).\n\n⚡️Excludes shipping fee.\n⚡️Includes taxes and duties for EU. \n⚡️Excludes taxes and duties for the rest of the markets.", "delivery": "2026-09-01", "shipping": "Only certain countries", "backers": 5, "limit": null, "remaining": null, "available": false}, {"name": "Supporter Kit - LIMITED", "amount": "€1,199", "description": "⚡️Excludes shipping fee.\n⚡️Includes taxes and duties for EU. \n⚡️Excludes taxes and duties for the rest of the markets.", "delivery": "2026-09-01", "shipping": "Only certain countries", "backers": 2, "limit": 20, "remaining": 18, "available": false}]}, {"id": 2, "name": "Fox and Bones: \"Are We Still Having Fun\"", "category": "Music", "days_left": 12, "goal_usd": 20000, "pledged_usd": 12116, "pct_funded": 60.6, "backers": 80, "blurb": "Pre-order and fund Fox and Bones' fifth studio record \"Are We Still Having Fun\"", "url": "https://www.kickstarter.com/projects/foxandbones/fox-and-bones-are-we-still-having-fun", "image_url": "https://mit.co1.qualtrics.com/ControlPanel/Graphic.php?IM=IM_VYQlzegKi3IH6oo", "deadline": "2026-05-18", "description_html": "<p>Who we are:</p><br><p>Hi! We're Fox and Bones, a Portland, OR based indie-pop band and first time Kickstarters! </p><br><p>We're running a pre-sale and fundraiser for our new record \"Are We Still Having Fun?\" as a way to get the record across the proverbial finish line while also giving our most dedicated fans and friends the opportunity to get involved in a more meaningful way.</p><br><p>\"Are We Still Having Fun?\" is an expansive step forward for us, both lyrically and sonically, as we tackle technology, the modern political climate, anxiety and burnout, party culture and mental health under a musical tapestry that ranges from our familiar retro folk rock to modern Bleachers-esque indie-pop. We've been collaborating with legendary producer Greg Holden and you can feel his expertise in each song, but we also feel it deeply in our bank statements!</p><br><p>Creating a record in modern times is expensive...</p><br><ul>\n<li>STUDIO TIME - $20,000</li>\n<li>MUSICIANS - $5,000</li>\n<li>MIXING AND MASTERING - $5,000</li>\n<li>PRINTING/PRESSING AND DESIGN - $5,000</li>\n<li>PROMOTION - $10,000</li>\n</ul><p>Sure, we could have cut corners to try to bring the cost down, but after 10 years in the industry, we know how important quality is at each and every step to create the best record possible, and frankly, we aren't the type to settle for less. </p><br><p>Why 20k?</p><br><p>Our goal for this Kickstarter is to get half of the total cost of the record funded, but why? We've always prided ourselves on being a working band and funding things ourselves - we're not the type to ask for handouts. We plan to tour on this album extensively and we've found that the more we tour, the more records we sell. </p><br><p>That said, after 10 years in the industry we are somehow more broke than when we started, and we want the opportunity to keep making the best music whatever the cost. So, we're looking at this as a price match - if you join us to fund the first half of the record, we'll recoup the rest through our endless hard work and dedication to this career. </p><br><p>If we fund more than $20K, we'd be even more in the black and able to put investment into future projects like a live or stripped down version of the album.</p><br><p>In Conclusion</p><br><p>Whether you have been a die hard Fox and Bones fan since day one or are new to this adventure, we hope you'll join us in the creation of \"Are We Still Having Fun?\" We love creating music and performing all over the country and have no intention of slowing down. Especially since we have no other marketable skills (you definitely don't want us operating heavy machinery). </p><br><p>We appreciate your time and can't wait to share this new record with you! </p><br><br><br><h3>Risks and Challenges</h3>Common risks associated with a career in music is having to tour for the rest of our lives and never retire, though coincidently, that is also one of it's greatest benefits. With the advent of the modern streaming industry, which pays artists fractions of a penny for their collective works, touring is the only reliable income that artists have. But even a successful year of touring can't fully provide for a standard of living and the astonishing amount of money required to fund a new record. So we are here to ask our friends, fans and family if they'd like to participate in the creation of this record!", "rewards": [{"name": "Limited Edition Sticker Pack", "amount": "$10", "description": "A pack of random Fox and Bones stickers from over the years including a limited edition \"Are We Still Having Fun\" cake sticker.", "delivery": "2026-09-01", "shipping": "Anywhere in the world", "backers": 2, "limit": null, "remaining": null, "available": false}, {"name": "\"Are We Still Having Fun\" Signed CD", "amount": "$25", "description": "A limited edition \"Are We Still Having Fun\" CD delivered directly to you two weeks before the official release!", "delivery": "2026-09-01", "shipping": "Anywhere in the world", "backers": 27, "limit": null, "remaining": null, "available": false}, {"name": "\"Are We Still Having Fun\" Signed Vinyl", "amount": "$50", "description": "Signed copy of \"Are We Still Having Fun\" delivered directly to your door two weeks before the official release!", "delivery": "2026-09-01", "shipping": "Anywhere in the world", "backers": 41, "limit": null, "remaining": null, "available": false}, {"name": "\"Other Things\" Limited Edition Shirt", "amount": "$100", "description": "Limited run Fox and Bones \"Other Things\" T-Shirt", "delivery": "2026-09-01", "shipping": "Anywhere in the world", "backers": 3, "limit": null, "remaining": null, "available": false}, {"name": "Complete Merch Bundle", "amount": "$150", "description": "A sticker, signed CD, signed Vinyl and limited edition \"Other Things\" T-Shirt. It's the complete \"Are We Still Having Fun\" Package.", "delivery": "2026-09-01", "shipping": "Anywhere in the world", "backers": 8, "limit": null, "remaining": null, "available": false}, {"name": "Handwritten and Framed Lyrics", "amount": "$250", "description": "Choose your favorite Fox and Bones song and we'll (Sarah) hand write and frame them!", "delivery": "2026-09-01", "shipping": "Anywhere in the world", "backers": 6, "limit": null, "remaining": null, "available": false}, {"name": "Limited Edition Vinyl Test Pressing", "amount": "$500", "description": "Before each full run of vinyl can be printed, we're sent 5 test pressing to check that the record will play as indented with no big skips or warbles. These are numbered to 5 and will be signed by both of us plus our producer Greg Holden.", "delivery": "2026-09-01", "shipping": "Anywhere in the world", "backers": 0, "limit": 5, "remaining": 5, "available": false}, {"name": "Private Fox and Bones House Show", "amount": "$1,000", "description": "We perform a private house show for you and your friends during our 2027 US tour. We find a date that works, you invite your friends and we handle the rest!", "delivery": "2026-09-01", "shipping": "Only United States", "backers": 5, "limit": 5, "remaining": 0, "available": false}, {"name": "Executive Producer Credit", "amount": "$2,000", "description": "Have your name featured on the new record as an Executive Producer!", "delivery": "2026-09-01", "shipping": "Anywhere in the world", "backers": 2, "limit": 5, "remaining": 3, "available": false}, {"name": "Custom Fox and Bones song", "amount": "$5,000", "description": "Your very own professionally recorded Fox and Bones song! We set up a one hour zoom session where we get all of the details about what kind of song you want us to write for you. It could be for a friend, family member or anything you've ever wanted! We then write and record the song in a professional studio here in Portland.", "delivery": "2027-03-01", "shipping": "Anywhere in the world", "backers": 1, "limit": 2, "remaining": 1, "available": false}, {"name": "LIFETIME Backstage Passes", "amount": "$10,000", "description": "Backstage Passes to every Fox and Bones show FOREVER! Any show, any time, any venue, FOR LIFE.", "delivery": "2026-09-01", "shipping": "Anywhere in the world", "backers": 0, "limit": 1, "remaining": 1, "available": false}]}, {"id": 3, "name": "Petite Wine Bar: A Tiny Bottle Shop Expanding", "category": "Food", "days_left": 11, "goal_usd": 55000, "pledged_usd": 13495, "pct_funded": 24.5, "backers": 106, "blurb": "Help us expand our tiny bottle shop into Ballard's natural wine bar", "url": "https://www.kickstarter.com/projects/petitewine/petite-wine-bar-a-tiny-bottle-shop-expanding", "image_url": "https://mit.co1.qualtrics.com/ControlPanel/Graphic.php?IM=IM_d0umyA52zhv9Eeh", "deadline": "2026-05-17", "description_html": "<p>Petite needs your help getting a little less tiny! </p><br><p>Wow, y’all. What a wild ride these past two years have been. When we opened our humble 90-square-foot shop back in 2023 we had no idea what this tiny little space would bring. Thanks to our supportive community, Petite quickly outpaced itself as a grab-and-go bottle shop and is now Seattle’s tiniest wine bar, complete with French-inspired patio seating and two (2!!) stools at our window bar. </p><br><p>And now, we’re incredibly excited to share our next chapter. With your help, we are turning Petite into a real wine bar (with, like more than 2 seats inside)! This expansion will allow Petite to host larger groups while continuing to serve as a neighborhood gathering place much in the same way we have for the past two years.</p><br><p>The past two years have not been without their hurdles. The wine industry and hospitality in general have been hit hard by tariffs, a shaky economy and a frankly unnerving political climate. And it’s not just us, we know it’s tough out there for everyone. But we also know what can be accomplished with a little help from our friends; you all have generously supported us to get to where we are today. So we’re doing it, we’re asking for your help and for you to be involved in Petite’s next chapter. This is going to be something great, we can feel it.</p><br><p>Our working timeline is dependent on lots of moving factors but we have already begun our first phase as an event space with an open floor plan. This will be followed by more robust construction to build out a bar and permanent fixtures, with the goal of having the space finalized by June 2026. Proceeds from this fundraiser will directly benefit our second phase construction efforts and will help pay for expensive plumbing, electrical, fixtures, architect fees and permitting. </p><br><p>From day one, it has been our goal to provide a space for every guest to feel comfortable, see familiar faces, make connections and maybe learn a thing or two about this movement we call natural wine. Our community has inspired us to continue to curate an approachable, welcoming and relaxed environment for whatever you need, whether it’s a sunny corner to reconnect with a friend or a moment of peace with a new book. If you’ve stopped in for a bottle, a glass or just to chat, your support means more than you know. </p><br><p>With Gratitude,</p><br><p>Gillian and Nick</p><br><br><br><h3>Risks and Challenges</h3>There are inherent risks with any expansion project, no matter how tiny it might seem on paper (or in person!). We pledge to hold ourselves to a high standard of transparency throughout Petite’s transformation and plan to share out updates frequently as we track to our goals. \n\nPotential risks involve permitting timelines and scope creep with our buildout costs, both of which are issues we have planned for and have taken into consideration when building our Kickstarter goal and timeline for completion. If this campaign doesn’t reach its goal, our bar buildout will have to be scaled back and the timeline stretched significantly. We believe Ballard deserves a dedicated gathering space for shared moments and good wine with an approachable vibe, and we hope you do, too! Thank you for taking a chance with us!", "rewards": [{"name": "The Petite Wine Key", "amount": "$50", "description": "1 Petite Wine Key", "delivery": "2026-09-01", "shipping": "Only United States", "backers": 11, "limit": null, "remaining": null, "available": false}, {"name": "N/A Spritz Class", "amount": "$75", "description": "Build your own balanced non-alcoholic cocktails with a special bartender guest! \n\nTicket admits one. Class timing to be announced at a later date.", "delivery": "2027-05-01", "shipping": "Seattle, WA", "backers": 1, "limit": 30, "remaining": 29, "available": false}, {"name": "Petite Gift Card", "amount": "$100", "description": "$125 Gift Card for only $100!", "delivery": "2026-09-01", "shipping": "Seattle, WA", "backers": 49, "limit": 100, "remaining": 51, "available": false}, {"name": "Meet the Winemaker!", "amount": "$150", "description": "Meet a winemaker at this exclusive ticketed event! Attendance is limited to ticket holders - this is your chance for an intimate meet and greet and Q&A with a winemaker. \n\nTicket grants admission only for two people. Exact timing to be announced at a later date.", "delivery": "2027-05-01", "shipping": "Seattle, WA", "backers": 2, "limit": 50, "remaining": 48, "available": false}, {"name": "Petite Bundle", "amount": "$250", "description": "Best bundle - Ltd edition hat, market tote, wine key, and sticker", "delivery": "2026-09-01", "shipping": "Seattle, WA", "backers": 8, "limit": 50, "remaining": 42, "available": false}, {"name": "VIP Launch Party Entry", "amount": "$500", "description": "We're throwing an exclusive VIP launch party before our grand opening! Attendance is limited to ticket holders and their +1. \n\nTicket grants admission only.", "delivery": "2026-07-01", "shipping": "Seattle, WA", "backers": 4, "limit": 15, "remaining": 11, "available": false}, {"name": "Vashon Island Day Trip + Winemaker Visit", "amount": "$1,000", "description": "Get out of the city and explore Vashon Island! Your rendezvous awaits at Alli Lanphear Vineyard & Winery in the Puget Sound AVA. Rebecca's vineyard is the closest natural winery to Petite and just a quick ferry ride away! \n\nYour ticket includes tour of property, ferry passage and lunch for four guests. \n\nLimit 4 guests. Date to be determined based on availability.", "delivery": "2027-05-01", "shipping": "Vashon, WA", "backers": 2, "limit": 2, "remaining": 0, "available": false}, {"name": "Private Party with DJ", "amount": "$2,500", "description": "We are offering the use of our space for a private event with a DJ! You and 20 of your best friends will get your groove on all night long with our state of the art analog sound system. \n\nUse this for an engagement or bachelor/bachelorette party, or a very special birthday! \n\nLimited to 20 guests. Petite to provide use of space and DJ. Blackout dates apply.", "delivery": "2027-05-01", "shipping": "Seattle, WA", "backers": 0, "limit": 3, "remaining": 3, "available": false}, {"name": "Coursed Dinner for 6", "amount": "$3,500", "description": "We've partnered with our favorite local chefs to offer a private dinner for 6. Enjoy a coursed dinner for you and five friends at Petite.\n\nLimited to 6 guests. Petite to provide use of space. Dinner also provided. Blackout dates apply.", "delivery": "2027-05-01", "shipping": "Seattle, WA", "backers": 0, "limit": 2, "remaining": 2, "available": false}, {"name": "Evening Party w/ Film Photographer", "amount": "$5,000", "description": "Private use of Petite's space for a 3-hour evening event for the books! Your night will include an hour and a half with legendary photographer Jordan Voth, documenting in both film and digital. \n\nUse this for an engagement or bachelor/bachelorette party, or a very special birthday! \n\nLimited to 30 guests. Petite to provide Jordan Voth's services and use of Petite's space. Blackout dates apply.", "delivery": "2027-05-01", "shipping": "Seattle, WA", "backers": 0, "limit": 2, "remaining": 2, "available": false}]}, {"id": 4, "name": "Wild West Mailings! A Snail Mail Adventure!", "category": "Publishing", "days_left": 10, "goal_usd": 4500, "pledged_usd": 2688, "pct_funded": 59.7, "backers": 28, "blurb": "Step into the Wild West with stories told through mail, where every letter pulls you deeper into the frontier.", "url": "https://www.kickstarter.com/projects/wildwestmailings/wild-west-mailings-a-snail-mail-adventure-0", "image_url": "https://mit.co1.qualtrics.com/ControlPanel/Graphic.php?IM=IM_yAkoZRCFGAOo37l", "deadline": "2026-05-16", "description_html": "<div>\n\n<img alt=\"\" src=\"https://i.kickstarter.com/assets/053/174/067/d89f86832bd7716fd309794acfe88cdf_original.png?fit=scale-down&amp;origin=ugc&amp;q=100&amp;v=1775017859&amp;width=680&amp;sig=9VLW4f6fdK%2BsjR3PG0nSnsl5Pu8I4PJYExn8LjOH5hk%3D\">\n\n\n</div>\n<h3>What Do You Get?</h3><p>🤠 Back Wild West Mailings and you can claim more than rewards; you can claim a place in the legend!</p><br><p>Depending on your pledge tier, you could:</p><br><p>✍️ Be immortalized as a character in one of our frontier tales<br>🃏 Help shape major story elements and leave your mark on the West<br>📬 Receive our full 10-letter story adventures before anyone else<br>🌵 Help bring a bold new storytelling company to life from day one</p><br><p>This isn’t just backing a project. It’s joining the story.</p><br><h3>What is Wild West Mailings?</h3><p>Wild West Mailings is an immersive, analog storytelling experience that brings original tales of the American frontier straight to your doorstep. Through a series of handcrafted letters and documents, each story unfolds over time, arriving by post. They are messages sent from a wilder, forgotten era.</p><br><p>Every mailing pulls you deeper into a living Wild West world of lawmen, outlaws, settlers, secrets, frontier legends and even wilderness mysteries. The ink, paper, and pacing are part of the story, turning your mailbox into the trailhead of an unfolding adventure.</p><br><div>\n\n<img alt=\"\" src=\"https://i.kickstarter.com/assets/053/174/034/9ec3159944311da3eea8182c4d894b4d_original.png?fit=scale-down&amp;origin=ugc&amp;q=100&amp;v=1775017620&amp;width=680&amp;sig=dA6P8Gu5Ss%2F%2BXbajptTBvOHCEyUc3SNEG%2BKMQvForiQ%3D\">\n\n\n</div>\n<p>Slow, tactile, and deliberately analog, Wild West Mailings invites you to step away from screens and experience storytelling the way it was meant to be felt on the frontier: one letter at a time.</p><br><div>\n\n<img alt=\"\" src=\"https://i.kickstarter.com/assets/053/174/037/7a1b13c1da84b03af3a71a8613136dca_original.png?fit=scale-down&amp;origin=ugc&amp;q=100&amp;v=1775017641&amp;width=680&amp;sig=RcIg9O95l4emv5%2BO%2Bez9hHx8GlZhRTlpNs2mjWsaTzk%3D\">\n\n\n</div>\n<h3>Packages</h3><p>As this new business develops, we are currently offering 5 immersive packages to start:</p><br><p><em>\"Murder Near Scarlet Mesa\"</em> is our first mystery package, highlighting the journey of Private Detective Roscoe \"The Bishop\" Stapleton as he investigates a horrific murder in a desert town where no one is speaking up while sending his notes back to his assistant.</p><br><p><em>\"A Holster Full Of Justice\"</em> is much more serious in tone and follows newly-appointed Deputy Redmond Downing as he starts his first pursuit of a villainous bank robber. He writes back to his wife, Mamie and newborn son, Ross.</p><br><p><em>\"A Satchel Full of Gold\"</em> trails the infamous Boone \"Bunco\" Blackburn as he comes to terms with the transgressions he has committed while on the run from the Law.</p><br><p><em>\"The Adventure of Cody Munroe &amp; The Coyote Comet\"</em> is a whimsical tale that follows a boy out on the frontier with his father, writing back to his younger sister and mother after being witness to a mysterious \"fire in the sky.\"</p><br><p><em>\"The Adventure of Roxxi Higgins &amp; The Giant Tumbleweed\"</em> is a playful story that follows a young girl along the frontier with her father, both on the hunt of a massive tumbleweed that strolled through town. She writes back to her younger brother and mother and sends activities along the way.</p><br><p>...and many more to come!</p><br><div>\n\n<img alt=\"\" src=\"https://i.kickstarter.com/assets/053/174/040/ddcb7302925f9a69e6f59858418cce1a_original.png?fit=scale-down&amp;origin=ugc&amp;q=100&amp;v=1775017666&amp;width=680&amp;sig=ovyOqukEb382ruyWKI6dIHaJNfb%2FmQzN3DvZBHPUTaw%3D\">\n\n\n</div>\n<p>Wild West Mailings are a highly engaging blend of fiction and fact, smart but also the chance of silly. Any documents that come in the mysteries, like catalogue pages, newspaper articles, book excerpts, are written and created by us, but have been researched and can contain real information. This can create many opportunities for curious readers to research and further explore topics like geography, American History, The Wild West, the creation and use of ciphers and codes, etc.</p><br><div>\n\n<img alt=\"\" src=\"https://i.kickstarter.com/assets/053/174/044/b5aea4f0e20d87c113218b0240d12425_original.png?fit=scale-down&amp;origin=ugc&amp;q=100&amp;v=1775017684&amp;width=680&amp;sig=QTYIuAcBvZ7DtH2NcKCZgCH8Zit2nFZ838FvkBGp1nw%3D\">\n\n\n</div>\n<h3>Future Business Plans</h3><p>This business will not end with <em>just</em> five stories for customers for purchase. Several more legendary tales are already in development. We can't spoil the surprise just yet, but these future stories can be unlocked via stretch goals, as well as even more goodies!</p><br><div>\n\n<img alt=\"\" src=\"https://i.kickstarter.com/assets/053/174/046/bc20bb80843ed4cbf731fd490fc5e1b9_original.png?fit=scale-down&amp;origin=ugc&amp;q=100&amp;v=1775017700&amp;width=680&amp;sig=WoAuyDF2KhPNtroDxgfmHvMk7Eg47GmAIRvrx2PfUn0%3D\">\n\n\n</div>\n<h3>Shipping</h3><p>To generate a deeply immersive storytelling experience, we are offering two methods of shipping:</p><br><ul>\n<li>One letter every two weeks, for five months.</li>\n<li>All at once, to tear through in an afternoon! (All international orders outside the U.S. will be shipped all at once to avoid shipping issues.)</li>\n<li><em>Note: Due to current events, shipping to some territories (Iran, Russia, Ukraine, etc.) is restricted.</em></li>\n</ul><div>\n\n<img alt=\"\" src=\"https://i.kickstarter.com/assets/053/174/052/5bfe171f6cdf59af0b7172a879f9e224_original.png?fit=scale-down&amp;origin=ugc&amp;q=100&amp;v=1775017723&amp;width=680&amp;sig=lyOwhhTnpQU%2FuU%2BTWgBuNw3p%2FQq7E4bzwoXbcG3zLuo%3D\">\n\n\n</div>\n<h3>Resources</h3><p>So why this goal? Why these numbers? For such an immersive experience, various costs are associated with a project of this undertaking.</p><br><p>All the letters will be printed on crafted paper through a reliable, detailed, prosumer printer, and corresponding materials will be aged using tea-staining methods. We have also employed digital artists to handwrite these letters, compared to using premade fonts. We're going for total immersion here and we feel human-made writing is the best option for as many processes as we develop. We will also be utilizing different cardstocks for specific accessories included in the letter packages.</p><br><div>\n\n<img alt=\"\" src=\"https://i.kickstarter.com/assets/053/174/054/927844c4c5d41d42cdde1b7676e31971_original.png?fit=scale-down&amp;origin=ugc&amp;q=100&amp;v=1775017741&amp;width=680&amp;sig=VLQmJq0I6SO0ILUXRrd9AXYks5Mygt7TMPwDpGWnyv8%3D\">\n\n\n</div>\n<p>Funds generated from this Kickstarter will cover:</p><br><ul>\n<li>paper supplies, various colors and stocks</li>\n<li>building ready-to-ship packages for each product</li>\n<li>various add-ons for heightened immersion</li>\n<li>tech (thermal printer, custom branding iron [not for the cattle, but leather products])</li>\n<li>printer ink and inkpads</li>\n<li>rubber stamps for specific stories</li>\n<li>envelopes</li>\n<li>oven racks and baking sheets for tea-staining the papers</li>\n<li>industrial racks for organized storage</li>\n<li>plastic tubs for storing story-specific elements</li>\n<li>larger tubs for organized shipping </li>\n<li>artist costs (handwriting, images and story)</li>\n<li>website development/build</li>\n<li>business licenses</li>\n<li>post office box</li>\n<li>and more!</li>\n</ul><h3>Stretch Goals</h3><p>Stretch goals can unlock even more stories and goodies for everyone to share and experience!</p><br><div>\n\n<img alt=\"\" src=\"https://i.kickstarter.com/assets/053/174/059/f8e3c5895a26e7efeba89e7b961f41a1_original.png?fit=scale-down&amp;origin=ugc&amp;q=100&amp;v=1775017769&amp;width=680&amp;sig=0XuEtTieYxk1qE%2FtzIJRGrBZdnu4LHg8x7c63Mb3Q7c%3D\">\n\n\n</div>\n<p>Special Thanks to <a href=\"https://www.twitch.tv/pbandjlee\">PBAndJLee</a> for use of the music track \"Bright Horizons\" for this Kickstarter Video.</p><br><br><br><h3>Risks and Challenges</h3>Creating Wild West Mailings will be exciting but it comes with some very real frontier hazards.\n\n1. Production & Fulfillment Risks (The Big One)\nPrinting & Materials\nPaper quality, envelopes, inks, and specialty items can vary between batches.\nVintage-style materials may be harder to source consistently.\nSmall changes can break immersion if quality slips.\n\nAssembly Time\nHand-assembled packages take far longer than expected.\nCreative fatigue and physical burnout are real risks.\nScaling from 50 to 500 backers is not linear, it’s exponential.\n\n2. Shipping & Postal Challenges\nLost or Delayed Mail\nUSPS delays and lost letters are unavoidable.\nWeather and holiday surges can disrupt delivery schedules.\n\nCost Volatility\nPostage rates can increase mid-campaign or mid-fulfillment.\n\n3. Scope\nWriting, designing, printing, assembling, and mailing is many jobs.\nBurnout leads to delays, which can damage trust and we don't want that.\n\n4. Budgeting & Pricing Pitfalls\nHidden Costs\nReprints, replacement mailings, extra envelopes, tape, labels.\n\n5. Backer Expectations & Communication\nExpectation Gaps\nBackers may assume:\nFaster delivery than mail allows\nMore personalization than feasible\nA “game” when it’s a narrative experience\nSilence Anxiety\nLong gaps without updates cause concern, even if work is happening.\n\nHistorical Sensitivity\nThe Wild West included violence, colonization, and exploitation of large groups of people.\nWhile we respect history, we will do our best to not include these themes so as to not alienate backers. If any of these themes are included, they will be highlighted well before purchase.", "rewards": [{"name": "Early Pioneer", "amount": "$5", "description": "", "delivery": "2026-06-01", "shipping": null, "backers": 2, "limit": null, "remaining": null, "available": false}, {"name": "Campfire Supporter", "amount": "$10", "description": "", "delivery": "2026-06-01", "shipping": null, "backers": 3, "limit": null, "remaining": null, "available": false}, {"name": "Trailblazer", "amount": "$25", "description": "", "delivery": "2026-08-01", "shipping": "Anywhere in the world", "backers": 2, "limit": null, "remaining": null, "available": false}, {"name": "The Huckleberry", "amount": "$40", "description": "A character you name makes it into one of the stories!", "delivery": "2026-08-01", "shipping": null, "backers": 8, "limit": 50, "remaining": 42, "available": false}, {"name": "Rider On The High Trail", "amount": "$50", "description": "", "delivery": "2026-08-01", "shipping": "Anywhere in the world", "backers": 0, "limit": null, "remaining": null, "available": false}, {"name": "The First Dispatch", "amount": "$75", "description": "", "delivery": "2026-08-01", "shipping": "Anywhere in the world", "backers": 5, "limit": null, "remaining": null, "available": false}, {"name": "Founder Of The Territory", "amount": "$100", "description": "", "delivery": "2026-08-01", "shipping": "Anywhere in the world", "backers": 7, "limit": null, "remaining": null, "available": false}, {"name": "Bounty Hunter", "amount": "$150", "description": "", "delivery": "2026-08-01", "shipping": "Anywhere in the world", "backers": 3, "limit": null, "remaining": null, "available": false}, {"name": "Sheriff Of The Grand Mesa", "amount": "$250", "description": "", "delivery": "2026-08-01", "shipping": "Anywhere in the world", "backers": 1, "limit": null, "remaining": null, "available": false}, {"name": "Marshal Of The High Plains", "amount": "$350", "description": "", "delivery": "2026-05-01", "shipping": "Anywhere in the world", "backers": 1, "limit": null, "remaining": null, "available": false}, {"name": "Legend Of The Territories", "amount": "$500", "description": "", "delivery": "2026-05-01", "shipping": "Anywhere in the world", "backers": 1, "limit": null, "remaining": null, "available": false}]}, {"id": 5, "name": "Kalladen: Scotland's Independent Knitting Studio", "category": "Fashion", "days_left": 11, "goal_usd": 26467, "pledged_usd": 3427, "pct_funded": 13.0, "backers": 13, "blurb": "Founder Edition jumpers and scarves. Help us install our own knitting machine and launch independent production in Scotland.", "url": "https://www.kickstarter.com/projects/548081611/kalladen-scotlands-independent-knitting-studio", "image_url": "https://mit.co1.qualtrics.com/ControlPanel/Graphic.php?IM=IM_FBSblA18OBxWkyL", "deadline": "2026-05-17", "description_html": "<p>Kalladen is being built with a clear intention: to establish an independent Knitting studio in Scotland where material integrity, controlled production, and long-term craftsmanship define every piece we create.</p><br><p>This campaign marks the beginning of that studio.</p><br><p>Rather than launching as a label dependent entirely on external manufacturing, we are investing in our own professional knitting machine, the foundation that allows us to produce in small, deliberate batches while maintaining direct oversight of quality, structure, and finish.</p><br><p>The installation of this machine is not simply a logistical step. It is the moment that transforms Kalladen from concept into infrastructure. It allows us to move from idea to independent production, responsibly, transparently, and with permanence in mind.</p><br><h3>The State of Modern Knitwear</h3><p>In today’s market, knitwear is often detached from its origin. Production is outsourced, materials are selected at scale, and quality becomes secondary to speed.</p><br><p>Premium yarn deserves precision.</p><br><div>\n\n<img alt=\"\" src=\"https://i.kickstarter.com/assets/052/736/261/adb79d5181dc90c2d01cf6c6457d0a15_original.jpg?fit=scale-down&amp;origin=ugc&amp;q=92&amp;v=1772049258&amp;width=680&amp;sig=mdgkAprCZIzOAljuFDrDHGRAUai47vRfC4opIVCBqEs%3D\">\n\n\n</div>\n<p>Craftsmanship requires proximity to the process.</p><br><p>Without ownership of production, true independence is limited.</p><br><p>We are choosing to build differently.</p><br><h3>Our Approach</h3><p>Before launching this campaign, we travelled to the mill ourselves. We selected our merino and cashmere yarn directly. We studied the fibre, the spinning process, and the finishing standards required to create garments that endure beyond seasonal cycles.</p><br><div>\n\n<img alt=\"\" src=\"https://i.kickstarter.com/assets/052/736/295/91dba226cb924c4a28687546dcfd56f7_original.jpg?fit=scale-down&amp;origin=ugc&amp;q=92&amp;v=1772049361&amp;width=680&amp;sig=Pbxu4pWj8cFichXHFi0UACoB3nqQElO02f96pkIqczE%3D\">\n\n\n</div>\n<p>The next step is installing our own professional knitting machine within our Scottish studio.</p><br><div>\n\n<img alt=\"\" src=\"https://i.kickstarter.com/assets/052/736/392/7c19f184b0b30a32f1bae8e7de478ec6_original.jpg?fit=scale-down&amp;origin=ugc&amp;q=92&amp;v=1772050005&amp;width=680&amp;sig=zoEcXuhb9D6ev1ayMyVjAPo34a3PfAv8DVnQ2VTAKuE%3D\">\n\n\n</div>\n<div>\n\n<img alt=\"\" src=\"https://i.kickstarter.com/assets/052/736/361/4c9b262e0cd7645c3df6f802f4935776_original.jpg?fit=scale-down&amp;origin=ugc&amp;q=92&amp;v=1772049735&amp;width=680&amp;sig=9SjJCnE9E5ekboSJpiwTWSQ8WO9wHD2JxfHlAKthAxc%3D\">\n\n\n</div>\n<p>Owning this equipment allows us to maintain production locally, control tension and structure directly, refine our designs in-house, and produce in measured quantities rather than chasing scale. It gives us the ability to build gradually and correctly.</p><br><p>The machine is expected to arrive approximately four months after funding. Production of our first collection begins immediately upon installation.</p><br><p>This campaign funds that foundation.</p><br><h3>The Founder Edition Collection</h3><p>To mark the establishment of our studio, we are offering a limited Founder Edition production run.</p><br><div>\n\n<img alt=\"\" src=\"https://i.kickstarter.com/assets/052/736/456/8d4db0db18197b87f435e3ece2930c61_original.png?fit=scale-down&amp;origin=ugc&amp;q=100&amp;v=1772050369&amp;width=680&amp;sig=Qww9UvxfoDzcZFdeCabeE7VpPPPHXadEnsdfBi4e0d8%3D\">\n\n\n</div>\n<p>These pieces represent the first garments produced under our independent infrastructure. They will not be replicated in the same form once publicly launched.</p><br><div>\n\n<img alt=\"\" src=\"https://i.kickstarter.com/assets/052/736/468/f3270f5d8c145c754d9dc3de0254567e_original.png?fit=scale-down&amp;origin=ugc&amp;q=100&amp;v=1772050426&amp;width=680&amp;sig=anWURMuDfIOUyE%2BgqX5jeeM4YZmq%2F%2B3MG0Dn2leEujI%3D\">\n\n\n</div>\n<h3>Founder Edition Jumper</h3><p>The Founder Edition Jumper is crafted from a premium merino and cashmere blend, selected for balance, durability, and refinement. Its structure is clean and intentional, designed for longevity rather than trend.</p><br><div>\n\n<img alt=\"\" src=\"https://i.kickstarter.com/assets/052/736/495/9e30eabd571d56812b2e38ee69c34dbf_original.jpg?fit=scale-down&amp;origin=ugc&amp;q=92&amp;v=1772050656&amp;width=680&amp;sig=STZRPWbiLkGRUQVwTf23TuFmcl2pUozwU7dbB3giXWo%3D\">\n\n\n</div>\n<p>Future retail pricing will be £300. Founder pricing is available exclusively through this campaign.</p><br><div>\n\n<img alt=\"\" src=\"https://i.kickstarter.com/assets/052/736/521/bf5012023f6ab1c91df9402ff7a0e037_original.jfif?fit=scale-down&amp;origin=ugc&amp;q=92&amp;v=1772050847&amp;width=680&amp;sig=4n1Qzyxeg924Y7XmEf7%2BeykS%2BemAai0sah0KA8dv5GM%3D\">\n\n\n</div>\n<p>This is not a seasonal garment. It is the beginning of a standard.</p><br><div>\n\n<img alt=\"\" src=\"https://i.kickstarter.com/assets/052/736/562/4094a93bc5f5ddf215be5b97ec2678b8_original.png?fit=scale-down&amp;origin=ugc&amp;q=100&amp;v=1772051045&amp;width=680&amp;sig=4a%2FmempoQmjC1iPvRW6NIa4UmgLWLfw3l%2FvQuitA2mg%3D\">\n\n\n</div>\n<h3>Founder Edition Scarf</h3><p>Constructed from the same premium yarn, the Founder Edition Scarf reflects equal attention to material integrity and finishing. It is understated, versatile, and designed to complement the jumper or stand independently as a refined staple.</p><br><div>\n\n<img alt=\"\" src=\"https://i.kickstarter.com/assets/052/736/600/7b1126b1dc38db47bdf408fbb2cd0c17_original.jpg?fit=scale-down&amp;origin=ugc&amp;q=92&amp;v=1772051204&amp;width=680&amp;sig=rsBtQg4LlhmCrQM5jinW8vynBg%2BltBhroglAnGhZdYc%3D\">\n\n\n</div>\n<div>\n\n<img alt=\"\" src=\"https://i.kickstarter.com/assets/052/736/607/f6f1fb1f3d485717f640b9e650065068_original.png?fit=scale-down&amp;origin=ugc&amp;q=100&amp;v=1772051229&amp;width=680&amp;sig=7ztOAivqPgAYvIJ2MxxOU1SGYbaVbK4GiPKxP2OZdQw%3D\">\n\n\n</div>\n<p>\n<img src=\"https://i.kickstarter.com/assets/052/736/605/b862eb25961aa6b8a211eb20edae4000_original.jfif?fit=scale-down&amp;origin=ugc&amp;q=92&amp;v=1772051221&amp;width=4000&amp;sig=YVmb0WfiybZetAjRfrzKjB3He6pAygtjVIK0wzYXtTk%3D\">Limited founder colourways are available only during this campaign.</p><br><h3>Founder Bundle</h3><p>A controlled number of Founder Bundles are available for those who wish to secure both jumper and scarf from the first production run. Quantities remain intentionally limited to preserve the integrity of the edition.</p><br><div>\n\n<img alt=\"\" src=\"https://i.kickstarter.com/assets/052/736/626/caeaf83c24e54473196a450a6044aff3_original.jpg?fit=scale-down&amp;origin=ugc&amp;q=92&amp;v=1772051355&amp;width=680&amp;sig=eULg2r%2BmD65PWGbtNgSX%2FY7Qs0k%2F92I3usMPeh7tlNg%3D\">\n\n\n</div>\n<div>\n\n<img alt=\"\" src=\"https://i.kickstarter.com/assets/052/736/734/2bc1c72780215aa61f7dc6c8eb606190_original.jpg?fit=scale-down&amp;origin=ugc&amp;q=92&amp;v=1772051939&amp;width=680&amp;sig=Q9fOyDqPrhiRaxdQ7%2F8AIZZerfMTOwC5Q5CNufk6c6w%3D\">\n\n\n</div>\n<h3>Who This Is For</h3><p>This project is not built for fast fashion cycles or rapid consumption.</p><br><p>It is for individuals who value material authenticity, independent production, and garments constructed with long-term wear in mind. It is for those who understand that quality requires proximity to process and that craftsmanship is built through infrastructure, not marketing.</p><br><div>\n\n<img alt=\"\" src=\"https://i.kickstarter.com/assets/052/736/648/a9b0b281742fffddd9e8de9ba60d1554_original.jpg?fit=scale-down&amp;origin=ugc&amp;q=92&amp;v=1772051478&amp;width=680&amp;sig=4TzDVVjVV06%2BPD7sZXHvIui%2FnSEsh9bpSKVIuoEBCcE%3D\">\n\n\n</div>\n<p>If you prefer permanence over turnover, this studio is being built with you in mind.</p><br><h3>Funding &amp; Allocation</h3><p>Our funding goal of £20,000 supports the acquisition of the professional knitting machine, the procurement of our initial yarn supply, studio preparation, and the first Founder Edition production run.</p><br><div>\n\n<img alt=\"\" src=\"https://i.kickstarter.com/assets/052/736/829/22eead977aee2d1991c9ffd10a111dd7_original.png?fit=scale-down&amp;origin=ugc&amp;q=100&amp;v=1772052368&amp;width=680&amp;sig=h899NQHmgoeAZHMHuLYRzeVZPgqUzEeP%2FS905YY1H1E%3D\">\n\n\n</div>\n<p>Should the campaign exceed its target, additional funds will be directed toward expanding material sourcing and strengthening early production capacity.</p><br><p>This is a measured expansion, not an aggressive scale strategy.</p><br><h3>Timeline &amp; Transparency</h3><p>The knitting machine is expected to arrive approximately four months after successful funding. Once installed, production of Founder Editions begins immediately.</p><br><p>Shipping costs will be calculated separately after the campaign based on each backer’s location, ensuring clarity and fairness.</p><br><p>Throughout the process, we will provide consistent updates so backers can follow the studio’s progress from installation through production and dispatch.</p><br><p>Crowdfunding is built on trust. We believe transparency is part of craftsmanship.</p><br><h3>Why Back Now</h3><p>Founder pricing will not return after this campaign. The initial production run will not be recreated in identical form once the studio begins public retail.</p><br><p>Backing this campaign does more than secure a garment at preferential pricing. It establishes participation in the founding phase of an independent Scottish Knitting studio, one built deliberately, responsibly, and with long-term intent.</p><br><p>We are not building for rapid visibility.</p><br><p>We are building for permanence.</p><br><div>\n\n<img alt=\"\" src=\"https://i.kickstarter.com/assets/052/736/708/393d30c039ece8a00d75c5f6abebd87e_original.jpg?fit=scale-down&amp;origin=ugc&amp;q=92&amp;v=1772051790&amp;width=680&amp;sig=gslyAzrDG5mPoK3ozLlplsOs4hASNd2er0OrROsdBPA%3D\">\n\n\n</div>\n<p>If this philosophy resonates with you, we invite you to join us at the beginning.</p><br><p>Back Kalladen.<br>Wear the first chapter.</p><br><p><br> </p><br><p><br> </p><br><p><br> </p><br><p><br> </p><br><p><br><br> </p><br><p><br> </p><br><p><br> </p><br><p><br> </p><br><p>\n<br> </p><br><br><br><h3>Risks and Challenges</h3>Building an independent Knitting studio requires careful coordination across machinery delivery, material sourcing, and production scheduling. While we have structured this project deliberately, there are several areas where timing may require flexibility.\n\nThe professional knitting machine is expected to arrive approximately four months after successful funding. As with any specialised industrial equipment, logistics and installation timelines may experience minor adjustments. We are working directly with established suppliers to minimise this risk and will provide clear updates should any scheduling changes occur.\n\nYarn sourcing has already been established through confirmed mill relationships. However, fluctuations in material supply chains can occasionally affect lead times. To mitigate this, we are securing our initial yarn allocation promptly following funding and maintaining direct communication with our suppliers.\n\nProduction of the Founder Edition collection will begin immediately upon machine installation. We are intentionally limiting quantities in this first run to maintain quality control and ensure a manageable production schedule.\n\nShipping will be calculated separately after the campaign based on backer location. This prevents underestimating international logistics costs and ensures transparency for all supporters.\n\nCrowdfunding inherently involves building something new, and we approach that responsibility with seriousness. Our focus is not rapid scale but controlled implementation. Throughout the process, we will provide consistent updates so backers can follow progress from installation through production and dispatch.\n\nWe believe transparency is part of craftsmanship, and we are committed to delivering this first chapter with clarity and care.", "rewards": [{"name": "Founder Supporter", "amount": "£15", "description": "For those who wish to support the foundation of our studio.\nThis tier is for early supporters who want to be part of the beginning, even if they are not selecting a garment from the first production run.\nIncludes:\n\n-Recognition as a Founding Supporter\n-Your name listed on our digital Founder Wall\n-Early access to future releases before public launch\n-Campaign updates throughout production", "delivery": "2026-07-01", "shipping": null, "backers": 2, "limit": null, "remaining": null, "available": false}, {"name": "Founder Edition Scarf (Early Allocation)", "amount": "£95", "description": "A limited early allocation of our first Founder Edition Scarf at preferred pricing.\nCrafted from our premium merino and cashmere blend, this scarf represents part of our first independent production run in Scotland.\nFuture retail pricing will exceed this founder allocation.\nIncludes:\n\n-One Founder Edition Scarf\n-Access to limited founder colourways\n-Founder production batch recognition\n\nLimited quantity available.", "delivery": "2026-11-01", "shipping": "Anywhere in the world", "backers": 2, "limit": 40, "remaining": 38, "available": false}, {"name": "Founder Edition Scarf", "amount": "£120", "description": "For those joining after the early allocation closes.\nThe same Founder Edition Scarf, produced from the first studio run and crafted from our selected merino and cashmere yarn.\nIncludes:\n-One Founder Edition Scarf\n-Founder production batch recognition\n\n\nShipping charged separately after campaign.", "delivery": "2026-11-01", "shipping": "Anywhere in the world", "backers": 0, "limit": null, "remaining": null, "available": false}, {"name": "Founder Edition Jumper (Early Allocation", "amount": "£185", "description": "A limited early allocation of our Founder Edition Jumper at preferred pricing.\nThis jumper is crafted from a premium merino and cashmere blend and will retail at £300 once publicly launched.\nThis first production run marks the beginning of our independent studio.\nIncludes:\n-One Founder Edition Jumper\n-Access to founder colour selection\n-Founder production batch recognition", "delivery": "2026-11-01", "shipping": "Anywhere in the world", "backers": 5, "limit": 60, "remaining": 55, "available": false}, {"name": "Founder Edition Jumper", "amount": "£220", "description": "For those securing the Founder Edition after the early allocation closes.\nProduced in Scotland using our own professional knitting machine once installed, this jumper establishes the quality standard for Kalladen moving forward.\nFuture retail price: £300.\nIncludes:\n-One Founder Edition Jumper\n-Founder production batch recognition", "delivery": "2026-11-01", "shipping": "Anywhere in the world", "backers": 0, "limit": null, "remaining": null, "available": false}, {"name": "Founder Bundle (Limited Allocation)", "amount": "£375", "description": "For supporters who wish to secure both core pieces from the first production run.\nThis limited Founder Bundle includes both the Founder Edition Jumper and the Founder Edition Scarf from our inaugural studio batch.\nQuantities remain intentionally controlled.\nIncludes:\n-One Founder Edition Jumper\n-One Founder Edition Scarf\n-Founder production batch recognition\n-Priority production allocation within the first run", "delivery": "2026-11-01", "shipping": "Anywhere in the world", "backers": 4, "limit": 25, "remaining": 21, "available": false}]}, {"id": 6, "name": "LISTENER / EDEN — Zach Winters", "category": "Music", "days_left": 13, "goal_usd": 27000, "pledged_usd": 15015, "pct_funded": 55.6, "backers": 137, "blurb": "a new twin project of music & poetry.", "url": "https://www.kickstarter.com/projects/zachwinters/listener-eden-zach-winters", "image_url": "https://mit.co1.qualtrics.com/ControlPanel/Graphic.php?IM=IM_Xuus986CF3rRLyi", "deadline": "2026-05-19", "description_html": "<h3>THANK YOU</h3><p>Thank you all so much for the outpouring of support! Lane and I are so grateful. </p><br><h3>STRETCH GOAL(S)</h3><p>THANK YOU ALL SO MUCH FOR BELIEVING IN THIS PROJECT! ♥️</p><br><p>if we hit $30k and beyond we have some other options within our grasp! things we could do:</p><br><p>- a short run of softcover poetry books<br>- a small run reprint my first poetry collection, <em>Snowmelt to Roots</em>, which sold out in April<br>- we could also do a short run of <em>Shade of Indigo</em> on CD (which I have never done)</p><br><p>I covered all musician costs out of pocket (ie they were not included as part of the goal for the budget of this preorder campaign). </p><br><p>beyond that, I would love to be able to invest in future music-making and writing. things like gear so I can make my music better and more efficiently, instruments, collaborative work with other musicians (there's an instrumental record I've been wanting to make with some friends), and begin to help cover things like bringing other musicians with me on the road, make time to dream about artist retreats, film higher quality live-take videos to share these songs, and maybe be able to book time with some artist friends working on new music (one of my most frequent dreams would be a non-lyrical / instrumental album with some wonderfully talented friends, making music for the home and the headphones). </p><br><p>if things went really wild, maybe I'd finally be able to get a permanent space (think garden shed)—working temporarily in someone else's space (a shower, one of the kid's rooms, a closet, the pool house, etc) is how I've done the last 9 albums, but sometimes I wonder if I'd be able to get more work done if the space stayed put.</p><br><p>=========================================</p><br><p>I'm excited to share this new offering of work with you! it's another set of twins—an new album &amp; a new book of poetry.</p><br><p>the new album is called Listener.</p><br><p>the new collection of poetry is called Today This Was Eden.</p><br><div>\n\n<img alt=\"\" src=\"https://i.kickstarter.com/assets/053/267/711/f19d46f40bcd89d75e5a8a7ca5f4b2a0_original.png?fit=scale-down&amp;origin=ugc&amp;q=100&amp;v=1775682593&amp;width=680&amp;sig=q2NLOW9AdKOTHFPjUNYVRzC2eRdmpaoeBcD4iASjD20%3D\">\n\n\n</div>\n<p><br>there are some conversations going on between the two works, and bringing them to completion has been a fulfilling labor. I invite you to pre-order them &amp; help me to midwife them into the world. </p><br><p>more on the projects below!</p><br><p>=========================================</p><br><p>CHOOSE A BUNDLE OR BUILD-YOUR-OWN REWARD</p><br><p>you can choose one of the bundles (I tried to make those some solid offerings). but you can also do it \"build-your-own burrito bowl\" style:</p><br><ul>\n<li>pick your protein = main reward tier</li>\n<li>pick your other toppings = add-ons </li>\n</ul><p>you can add as many add-ons as you like. let me know if you have add-on suggestions.</p><br><p>current add-ons:</p><br><p>∆ <em>Snowmelt to Roots</em> (my first poetry book)<br>∆ ZW Essays (selection of printed essays <a href=\"https://zachwinters.substack.com/\">from my Substack</a>)<br>∆ Listener CD (signed)<br>∆ Clothbound Edition of <em>Today This Was Eden</em><br>∆ Song-by-Song Commentary<br>∆ Read-Aloud recording of a selection from the new poetry book<br>∆ Mentoring Session<br><br>=========================================</p><br><p>LISTENER — Songs + Thoughts</p><br><p>1 Help Me Find My Way<br>2 Earth / Adam<br>3 Lock &amp; Key<br>4 Mizzle<br>5 What You Do With It<br>6 Padma River<br>7 When Adam Got Shot<br>8 Song for Liv<br>9 Untroubled<br>10 Muddy Bottom<br>11 [untitled]<br>12 Love's Commute<br>13 Back to You</p><br><div>\n\n<img alt=\"\" src=\"https://i.kickstarter.com/assets/053/757/747/ce318a9e1fe2998739ee36ed80cd2976_original.png?fit=scale-down&amp;origin=ugc&amp;q=100&amp;v=1778983116&amp;width=680&amp;sig=iRL64pSh56thzAGkt1nwu0XzFBAK6X6oADzkZ4zCpvU%3D\">\n\n\n</div>\n<p>some of my favorite people are good listeners, and the world could use more of my favorite people [/cheek]. I've had the honor, through friendship and family, to be a listening ear to a few hard things people are moving through, even as these songs make their way into the world. there is, through so much of these songs, the theme of leaning towards one another, and of listening as a form of love—thus the title, LISTENER.</p><br><p>even when listening doesn't solve the problem, sometimes listening and a good question are powerful medicine. sometimes speaking our pain to a loving ear is necessary to our healing. I hope this album confers some of those medicinal benefits of empathy, of connection through pain and sadness and love, and of the experience of all of humanity, to reaching longingly for the transcendent, and to feel ourselves being held.</p><br><p>all the songs are finished (celebration!!!). I've been in the studio with this album since September 2025. I commuted back and forth (see \"Love's Commute\") across town to a house some friends let me use for the tracking. the seasons slipped from the late summer heat, through many freezing wintery days (see the last image), and up to the present moment (Apr 2026). some bass editing, a few stray electrics, and a few more string parts with my friend Luke Skaggs, and we should be across the production finish line! I've been trying some new techniques to bring the sounds I'm hearing across to you as fully as I ever have. I hope to be finished mixing the record by June and to have it mastered by the end of July. </p><br><p>CAST:<br>Aaron Strumpel - horns<br>Jesse Proctor - drums &amp; perc<br>Kevin Dailey - synth<br>Luke Skaggs - strings, etc.<br>Salim Sadman Samoy - boatman on the Padma photo<br>Tyson Motsenbocker - organ</p><br><p>it'll be a delight to share these songs with you.</p><br><p>where I recorded acoustic versions of the songs — see the Pool Room EP reward:</p><br><p><img src=\"https://i.kickstarter.com/assets/053/229/413/64b26e9f47b80ac7b00560f30d14922d_original.jpeg?fit=scale-down&amp;origin=ugc&amp;q=92&amp;v=1775456069&amp;width=3024&amp;sig=du6QCLZkqIO8HbITxH%2B7Ed007U3sfZhVjw%2BdalL7EjU%3D\"></p><br><p>=========================================</p><br><p>TODAY THIS WAS EDEN — Thoughts</p><br><p>my last collection of poetry was written for eyes, to be read in quiet moments. </p><br><div>\n\n<img alt=\"\" src=\"https://i.kickstarter.com/assets/053/550/937/841e491831a950ce0e4bfe996aea404b_original.png?fit=scale-down&amp;origin=ugc&amp;q=100&amp;v=1777576176&amp;width=680&amp;sig=9hEM3tMC%2F1y%2FT240lW%2BJF%2FtyaKVj4Ll6V2q3x6cTKLc%3D\">\n<figcaption>this is a mock of what I hope it looks like in 100 yearsillustration by Ashley McGrath</figcaption>\n\n\n</div>\n<p>this new collection was written for ears, that there would be a reward in reading them aloud.</p><br><p>I've worked my way across this collection of poems ten or more times, reading them aloud that they might have a more savory mouth feel. Lane, my wife, also read the entire collection aloud to me, working her way through the sections over a series of nights. I would note the lines that made her trip, or the odd mouth economies, or things that had gone unsaid. and then I took out my chisel and tried to bring clarity to the forms.</p><br><p>have you ever read aloud to a child and found yourself stumbling over the words? sometimes it seems that no one must have read them aloud—otherwise how could they be so awkward? my hope in doing all the oral readings was to prove the architecture of their spoken language and to make sure the thing had enough windows.</p><br><p>there's a lot of water in the collection.<img src=\"https://i.kickstarter.com/assets/053/229/493/95bb87c82d1790edc8850b0d25d8833e_original.jpeg?fit=scale-down&amp;origin=ugc&amp;q=92&amp;v=1775457249&amp;width=3024&amp;sig=K4XH6Xpw0kGCvrQHUH5Nh%2BmoOUNy3VYkhQoYXbmTsMo%3D\"></p><br><p>the inheritance we have through poetry is, in part, to pursue the transcendent through verse, and to transmute the painful and the mundane into something true and beautiful. it's not just flowery language, it's a drawing of the eye. poetic language exists at all because we know that life is not only the world of cold, hard materialism. there is a hidden pattern to life that poetry gives voice to. I felt some influence from Shelley in his impassioned <em>A Defense of Poetry</em>, and I strove to write in a way that would illuminate the dignity of life and frame the world with a gratitude for the common wonder of being alive.</p><br><p>=========================================</p><br><p>these are not products.</p><br><p>they are offerings. </p><br><p>=========================================</p><br><p>there's so much to share. and lots to do.</p><br><p>my hope is to have all of this to you by December—if not sooner. there are lots of moving pieces at play, and even though both the main works are close to completion, shipping and turn-around times are not entirely predictable.  I hope to share them with you soon, and in person soon thereafter.</p><br><p>if you've followed me for a while, then you know my work and life flow out of my marriage with Lane and out my family. and you know my whole trajectory of touring and releasing new work has been very DIY. (and hopefully that my follow-through is pretty solid.)</p><br><p>I have been so grateful for your reception, both of me and my work, and also of (many times literally) my family and I. this life is a continual attempt to become more like God as we walk with him, to attempt a courageous life as we seek to steward the gifts and relationships we have. </p><br><p>let's all keep writing.</p><br><p>— ZW</p><br><p>=========================================</p><br><p>me on lunch in my winter uniform at the Pool House.</p><br><div>\n\n<img alt=\"\" src=\"https://i.kickstarter.com/assets/053/229/600/720d083f8a523b4389ce160de8362049_original.jpeg?fit=scale-down&amp;origin=ugc&amp;q=92&amp;v=1775458593&amp;width=680&amp;sig=4E%2BuKuW0Sagw5zk453%2F3K2GY4zJ3QytcpEKhPL3SjrE%3D\">\n\n\n</div>\n<p><br>some mood board ideas of what I'm wanting the clothcover hardback to look like, talking with the printers about different cloths now (or see that mockup above—not sure what colors are available yet):</p><br><div>\n\n<img alt=\"\" src=\"https://i.kickstarter.com/assets/053/312/899/eec723593a829a147bc70e55d9ef04f0_original.jpeg?fit=scale-down&amp;origin=ugc&amp;q=92&amp;v=1776028630&amp;width=680&amp;sig=Xn%2Bkc1sKmiXz7mMrIbFfypBBNdBKOnfBN3Dcg38sdLY%3D\">\n\n\n</div>\n<div>\n\n<img alt=\"\" src=\"https://i.kickstarter.com/assets/053/312/905/129647484ba126b49d2862c5aa3f90bb_original.jpeg?fit=scale-down&amp;origin=ugc&amp;q=92&amp;v=1776028674&amp;width=680&amp;sig=6Wq1RyD5og7sjby4fxf3dTKaYRCvTkQb2PlN%2FVNAcGw%3D\">\n\n\n</div>\n<div>\n\n<img alt=\"\" src=\"https://i.kickstarter.com/assets/053/312/910/c5198b2b7d690de2aac7d2a710dbe156_original.jpeg?fit=scale-down&amp;origin=ugc&amp;q=92&amp;v=1776028715&amp;width=680&amp;sig=GatuYM%2FoDZHOThGUyJPwlIkf%2FCdtwSYt%2Bav7Nkn0O7g%3D\">\n\n\n</div><br><br><h3>Risks and Challenges</h3>my biggest risk is—are you in this with me? do you want things like this to exist in the world? it's getting harder to find sincere, organic human creativity—not because it isn't happening, but because the arteries of human connection are getting lined with fake stuff. I have done my best to give from the heart and continue that tradition\n\nI noted this above, but my timelines are best estimates. my hope is that I will be able to deliver many of these before their states delivery dates, but with all the moving pieces and shipping details, some things are out of my hands (eg international shipping lanes staying open, hopefully Taylor Swift doesn't do another run of vinyl before I do, lol). I will do my best to deliver with attention to those stated times.", "rewards": [{"name": "Team Zach", "amount": "$7", "description": "lemme know you're on my team! this one says, \"I want more human art to exist in the world, and I'm happy you're making it, Zach!\" you'll receive one of the Pool Room acoustic versions of the new songs, and updates on the album & book.\n\n(and don't forget add-ons!)", "delivery": "2026-11-01", "shipping": null, "backers": 4, "limit": null, "remaining": null, "available": true}, {"name": "Digital Album", "amount": "$15", "description": "the new record—digitally. your choice of file delivered via bandcamp. why am I tryna front? you'd have to stream these new songs >4000 times for me to earn $15 from it (nearly 10 days straight of your boy ZW)... which maybe you should do anyways xoxo", "delivery": "2026-12-01", "shipping": null, "backers": 14, "limit": null, "remaining": null, "available": true}, {"name": "Acoustic/Pool Room EP", "amount": "$20", "description": "on my last night in the Pool House, I set up in the pool room and recorded some acoustic versions of most of the new songs, as well as some older songs. just my voice, an instrument, and the room. (not to be released on streaming services otherwise.)", "delivery": "2026-12-01", "shipping": null, "backers": 26, "limit": null, "remaining": null, "available": true}, {"name": "CD (signed)", "amount": "$30", "description": "get a signed copy of Listener on CD! I'll do a short run of 200 of these. Plus the digital album.", "delivery": "2026-12-01", "shipping": "Only United States", "backers": 20, "limit": 200, "remaining": 180, "available": true}, {"name": "Shirt", "amount": "$44", "description": "feel comfortable in a ZW shirt for the next decade. 100% cotton. probably Bella Canvas cause I like wearing those. *available as add-on.", "delivery": "2026-12-01", "shipping": "Only United States", "backers": 2, "limit": null, "remaining": null, "available": true}, {"name": "Vinyl (signed)", "amount": "$45", "description": "the new album, Listener, on vinyl. \n\n(we finally got another record player and it really does sound better [insert happy tears].) *available as add-on to other rewards.", "delivery": "2026-12-01", "shipping": "Only United States", "backers": 3, "limit": 250, "remaining": 247, "available": true}, {"name": "Vinyl (international)", "amount": "$45", "description": "the new album, Listener, on vinyl (and signed). but for you whomst are outside the US.\n\n(we finally got another record player and it really does sound better [insert happy tears].)\n\nif you're hoping to get more than the vinyl, message me and we'll see if we can get it arranged.", "delivery": "2027-01-01", "shipping": "Anywhere in the world", "backers": 0, "limit": 50, "remaining": 50, "available": true}, {"name": "Poetry Book (clothbound, signed)", "amount": "$50", "description": "beautiful, clothbound hardcover edition of the new poetry book. these will be individually signed & numbered. we will print 1000 because we are hopeful. (if we hit our initial goal, softcovers will be an option. jussayin.)", "delivery": "2026-12-01", "shipping": "Only United States", "backers": 17, "limit": 500, "remaining": 483, "available": true}, {"name": "Book (international)", "amount": "$50", "description": "the poetry book for all of you outside of the US! if you're hoping to get more than the poetry book, message me and we'll see if we can get it arranged.", "delivery": "2027-01-01", "shipping": "Anywhere in the world", "backers": 3, "limit": 50, "remaining": 47, "available": true}, {"name": "Vinyl + CD (bundle)", "amount": "$75", "description": "this one's for you future-nostalgic folks. all of yesterday's streaming kids are returning to analog. mom & pop's CD booklets are alive and well, vinyl is warming our hearths.", "delivery": "2026-12-01", "shipping": "Only United States", "backers": 1, "limit": 50, "remaining": 49, "available": true}, {"name": "Vinyl + Book (bundle)", "amount": "$90", "description": "if I were you, this is the one I'd get. new album on vinyl + new poetry book (clothcover). Listener + Today This Was Eden. *reminder: you can do add-ons for any tier*", "delivery": "2026-12-01", "shipping": "Only United States", "backers": 60, "limit": 100, "remaining": 40, "available": true}, {"name": "Vinyl + Book (international)", "amount": "$90", "description": "new album on vinyl + new poetry book but for those outside the land of my birth. if you're hoping to get more than the vinyl + book, message me and we'll see if we can get it arranged.", "delivery": "2027-01-01", "shipping": "Anywhere in the world", "backers": 3, "limit": 20, "remaining": 17, "available": true}, {"name": "Director's Cut", "amount": "$100", "description": "think director's cut, but with an album. you'll receive lyric & chord charts, song tutorials, and then I'll walk you through the new album, song by song, providing musical and lyrical commentary that will give you more insight into the creative process of making it. *includes the digital album, but you could also add-on a CD or vinyl to complete this set*", "delivery": "2026-12-01", "shipping": null, "backers": 2, "limit": null, "remaining": null, "available": true}, {"name": "The Book Worm (bundle)", "amount": "$130", "description": "for the readers, the librophiles, the literati—everything bookish. clothbound edition of Today This Was Eden + Zach reading a selection of poems from the new collection + Snowmelt to Roots (my first collection), a collection of essays, and the Song-by-Song Commentary (for good measure). I'll sign everything sign-able. I wrote these poems for ears—to be read aloud. with the Read-Aloud reward, I'll make a selection of some of my favorites and read them aloud for you (maybe with backing music?).*music rewards are available as add-ons*", "delivery": "2026-12-01", "shipping": "Only United States", "backers": 3, "limit": null, "remaining": null, "available": true}, {"name": "Gimme the Works (bundle)", "amount": "$155", "description": "Vinyl + Book (clothbound) + Shirt + Pool Room EP + Commentary", "delivery": "2026-12-01", "shipping": "Only United States", "backers": 18, "limit": null, "remaining": null, "available": true}, {"name": "Vinyl + Test Pressing", "amount": "$200", "description": "get the new album on vinyl + 1 of 5 test pressings of Listener on vinyl. (only 5 test pressings will ever get made.)", "delivery": "2026-12-01", "shipping": "Anywhere in the world", "backers": 0, "limit": 5, "remaining": 5, "available": true}, {"name": "Treasured Book + Handwritten Note", "amount": "$250", "description": "I'll find you a copy of one of my all-time favorite books and send you a handwritten note (with my best possible writing) telling some of what it has meant to me.", "delivery": "2026-12-01", "shipping": "Only United States", "backers": 2, "limit": 10, "remaining": 8, "available": true}, {"name": "Treasured Vinyl + Handwritten Note", "amount": "$250", "description": "I shall find thee one of my favorite all-time albums on vinyl and then sit down to write a note (yes, in my very best handwriting) to let you know what it's meant to me.", "delivery": "2026-12-01", "shipping": "Only United States", "backers": 2, "limit": 10, "remaining": 8, "available": true}, {"name": "Mentoring Session", "amount": "$300", "description": "we'll set up a phone call and have a conversation—we can talk music, production, life, poetry, or what have you... open to your questions, things you might want feedback on, or just an open conversation.", "delivery": "2027-02-01", "shipping": null, "backers": 0, "limit": 5, "remaining": 5, "available": true}, {"name": "Midwife/Midhusband* of the Arts", "amount": "$500", "description": "this one says, \"I'm not giving birth, but I wanna lend a hand and help make it happen—I love babies!\" the major works & and handwritten note from ZW.\n\n*it's okay to choose this one, regardless of whether you are a man, woman, or birth specialist.", "delivery": "2026-12-01", "shipping": "Only United States", "backers": 2, "limit": null, "remaining": null, "available": true}, {"name": "5 Song Drop-In", "amount": "$826", "description": "you pick 5 songs for me to play at your home (if not within 25 miles of a tour route, then at a mutually agreed-upon location closer to tour). hopefully before the est delivery, but just ball-parking depending on touring dates near you.", "delivery": "2028-06-01", "shipping": null, "backers": 0, "limit": 5, "remaining": 5, "available": true}, {"name": "Let There Be Art!", "amount": "$1,000", "description": "this one says, \"I want meaningful human art to exist in the world and I think Zach Winters is a part of that movement—I want to put more energy towards it...\"\n\nI'll be sending you the mother works—the cloth-bound book and the vinyl—as well as a note from me & Lane.", "delivery": "2026-12-01", "shipping": "Only United States", "backers": 1, "limit": null, "remaining": null, "available": true}, {"name": "Private 60-Minute Acoustic Show at Home", "amount": "$3,000", "description": "Private 60-minute acoustic show at your house, all travel and accommodation included—you pick the setlist. Plus the vinyl, clothbound poetry book, etc.\n \n$5500 outside of contiguous US.", "delivery": "2028-07-01", "shipping": "Anywhere in the world", "backers": 2, "limit": null, "remaining": null, "available": true}, {"name": "EARLY BIRD - Vinyl", "amount": "$40", "description": "gets the worm—or in this case, the vinyl. signed + and a handwritten note from me.", "delivery": "2026-12-01", "shipping": "Only United States", "backers": 17, "limit": 50, "remaining": 33, "available": false}, {"name": "EARLY BIRD - Poetry Book", "amount": "$40", "description": "while they're hot... beautiful, clothbound hardcover edition of the new poetry book. these will be individually signed & numbered. we will print 1000 total because we are hopeful. (if we hit our initial goal, softcovers will be an option. jussayin.)", "delivery": "2026-12-01", "shipping": "Only United States", "backers": 50, "limit": 50, "remaining": 0, "available": false}]}];
+
+// ---- State ----
+var currentProject = null;
+var currentTab = "campaign";
+var tabStartTime = Date.now();
+var tabsClicked = ["Campaign"];
+var timeOnTabs = {};
+
+// ---- URL Params ----
+function getParam(name) {
+  var params = new URLSearchParams(window.location.search);
+  return params.get(name);
+}
+
+// ---- Init ----
+function init() {
+  var projectId = parseInt(getParam("project") || "1", 10);
+  if (projectId < 1 || projectId > PROJECTS.length) projectId = 1;
+  currentProject = PROJECTS[projectId - 1];
+
+  var startTab = getParam("tab");
+  if (startTab && ["campaign","rewards","creator","faq","updates","comments","community"].indexOf(startTab) !== -1) {
+    currentTab = startTab;
+  }
+
+  renderProject();
+  renderTab();
+  setupTabs();
+}
+
+// ---- Render Project Header ----
+function renderProject() {
+  var p = currentProject;
+  document.getElementById("ks-category").textContent = p.category;
+  document.getElementById("ks-hero-img").src = p.image_url;
+  document.getElementById("ks-hero-img").alt = p.name;
+  document.getElementById("ks-title").textContent = p.name;
+  document.getElementById("ks-blurb").textContent = p.blurb;
+  document.getElementById("ks-creator-link").innerHTML = '<a href="' + escHtml(p.url) + '" target="_blank" rel="noopener">View on Kickstarter</a>';
+
+  var pctClamped = Math.min(p.pct_funded, 100);
+  document.getElementById("ks-progress").style.width = pctClamped + "%";
+  document.getElementById("ks-pct-funded").textContent = Math.round(p.pct_funded) + "% funded";
+  document.getElementById("ks-pledged").textContent = "$" + p.pledged_usd.toLocaleString();
+  document.getElementById("ks-pledge-label").textContent = "pledged of $" + p.goal_usd.toLocaleString() + " goal";
+  document.getElementById("ks-backers").textContent = p.backers.toLocaleString();
+  document.getElementById("ks-days").textContent = p.days_left;
+
+  // Sidebar rewards (max 5, show all regardless of availability)
+  var rewards = p.rewards || [];
+  var shown = rewards.slice(0, 5);
+  var html = "";
+  for (var i = 0; i < shown.length; i++) {
+    var r = shown[i];
+    html += '<div class="ks-sidebar-reward">';
+    html += '<div class="pledge">Pledge ' + escHtml(r.amount) + '</div>';
+    html += '<div class="rname">' + escHtml(r.name) + '</div>';
+    if (r.description) {
+      var desc = r.description.length > 120 ? r.description.substring(0, 120) + "..." : r.description;
+      html += '<div class="rdesc">' + escHtml(desc) + '</div>';
+    }
+    if (r.delivery) {
+      html += '<div class="rmeta">Est. delivery: ' + formatDelivery(r.delivery) + '</div>';
+    }
+    if (r.shipping) {
+      html += '<div class="rmeta">Ships to: ' + escHtml(r.shipping) + '</div>';
+    }
+    if (r.backers) {
+      html += '<div class="rmeta">' + r.backers.toLocaleString() + ' backer' + (r.backers !== 1 ? 's' : '') + '</div>';
+    }
+    if (r.limit && r.remaining != null) {
+      html += '<div class="rlimited">Limited: ' + r.remaining + ' of ' + r.limit + ' remaining</div>';
+    }
+    html += '</div>';
+  }
+  document.getElementById("ks-sidebar-rewards").innerHTML = html;
+}
+
+// ---- Tab Switching ----
+function setupTabs() {
+  var tabs = document.querySelectorAll(".ks-tab");
+  for (var i = 0; i < tabs.length; i++) {
+    tabs[i].addEventListener("click", function() {
+      // Record time on previous tab
+      var elapsed = Math.round((Date.now() - tabStartTime) / 1000);
+      var prevLabel = currentTab.charAt(0).toUpperCase() + currentTab.slice(1);
+      timeOnTabs[prevLabel] = (timeOnTabs[prevLabel] || 0) + elapsed;
+
+      // Switch tab
+      currentTab = this.getAttribute("data-tab");
+      tabStartTime = Date.now();
+
+      var label = currentTab.charAt(0).toUpperCase() + currentTab.slice(1);
+      if (tabsClicked.indexOf(label) === -1) tabsClicked.push(label);
+
+      // Update UI
+      var allTabs = document.querySelectorAll(".ks-tab");
+      for (var j = 0; j < allTabs.length; j++) allTabs[j].classList.remove("active");
+      this.classList.add("active");
+
+      renderTab();
+      sendInteraction();
+    });
+  }
+
+  // Set initial active tab
+  var allTabs = document.querySelectorAll(".ks-tab");
+  for (var j = 0; j < allTabs.length; j++) {
+    allTabs[j].classList.remove("active");
+    if (allTabs[j].getAttribute("data-tab") === currentTab) {
+      allTabs[j].classList.add("active");
+    }
+  }
+}
+
+// ---- Render Tab Content ----
+function renderTab() {
+  var container = document.getElementById("ks-tab-content");
+  container.scrollTop = 0;
+
+  switch (currentTab) {
+    case "campaign":
+      container.innerHTML = currentProject.description_html || '<div class="ks-empty-state">No description available.</div>';
+      break;
+    case "rewards":
+      container.innerHTML = renderRewardsTab();
+      break;
+    case "creator":
+      container.innerHTML = renderCreatorTab();
+      break;
+    case "faq":
+      container.innerHTML = '<div class="ks-empty-state">No FAQs have been posted yet.</div>';
+      break;
+    case "updates":
+      container.innerHTML = '<div class="ks-empty-state">No updates yet.</div>';
+      break;
+    case "comments":
+      container.innerHTML = '<div class="ks-empty-state">No comments yet.</div>';
+      break;
+    case "community":
+      container.innerHTML = renderCommunityTab();
+      break;
+  }
+}
+
+function renderRewardsTab() {
+  var rewards = currentProject.rewards || [];
+  if (rewards.length === 0) return '<div class="ks-empty-state">No rewards available.</div>';
+
+  var html = '<h3 style="margin-bottom:16px;">Support this project</h3>';
+  for (var i = 0; i < rewards.length; i++) {
+    var r = rewards[i];
+    html += '<div class="ks-reward-card">';
+    html += '<div class="pledge">Pledge ' + escHtml(r.amount) + ' or more</div>';
+    html += '<div class="rname">' + escHtml(r.name) + '</div>';
+    if (r.description) {
+      html += '<div class="rdesc">' + escHtml(r.description) + '</div>';
+    }
+    if (r.delivery) {
+      html += '<div class="rmeta">Estimated delivery: ' + formatDelivery(r.delivery) + '</div>';
+    }
+    if (r.shipping) {
+      html += '<div class="rmeta">Ships to: ' + escHtml(r.shipping) + '</div>';
+    }
+    if (r.limit && r.remaining != null) {
+      html += '<div class="rlimited">Limited (' + r.remaining + ' of ' + r.limit + ' left)</div>';
+    }
+    if (r.backers != null) {
+      html += '<div class="rbacker-count">' + r.backers.toLocaleString() + ' backer' + (r.backers !== 1 ? 's' : '') + '</div>';
+    }
+    html += '<div class="rselect-btn">Select this reward</div>';
+    html += '</div>';
+  }
+  return html;
+}
+
+function renderCreatorTab() {
+  var p = currentProject;
+  return '<div style="padding:20px 0;">' +
+    '<div style="font-size:13px;color:#696969;margin-bottom:6px;">CREATOR</div>' +
+    '<div style="font-size:18px;font-weight:600;margin-bottom:8px;">' + escHtml(p.name.split(":")[0].split(" - ")[0]) + '</div>' +
+    '<div style="font-size:14px;color:#696969;margin-bottom:12px;">First created &middot; 1 backed</div>' +
+    '<a href="' + escHtml(p.url) + '" target="_blank" rel="noopener" style="font-size:14px;">View project on Kickstarter &rarr;</a>' +
+    '</div>';
+}
+
+function renderCommunityTab() {
+  var p = currentProject;
+  return '<div style="padding:20px 0;">' +
+    '<div style="font-size:22px;font-weight:700;margin-bottom:4px;">' + p.backers.toLocaleString() + '</div>' +
+    '<div style="font-size:14px;color:#696969;margin-bottom:20px;">total backers</div>' +
+    '<div style="font-size:14px;color:#696969;">' + Math.max(1, Math.round(p.backers * 0.7)) + ' new backers &middot; ' + Math.max(0, Math.round(p.backers * 0.3)) + ' returning backers</div>' +
+    '</div>';
+}
+
+// ---- Helpers ----
+function escHtml(str) {
+  if (!str) return "";
+  var div = document.createElement("div");
+  div.appendChild(document.createTextNode(str));
+  return div.innerHTML;
+}
+
+function formatDelivery(dateStr) {
+  if (!dateStr) return "";
+  var parts = dateStr.split("-");
+  if (parts.length < 2) return dateStr;
+  var months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  var m = parseInt(parts[1], 10) - 1;
+  return months[m] + " " + parts[0];
+}
+
+// ---- postMessage to Qualtrics ----
+function sendInteraction() {
+  var contentEl = document.getElementById("ks-tab-content");
+  var scrollDepth = 0;
+  if (contentEl.scrollHeight > contentEl.clientHeight) {
+    scrollDepth = Math.round((contentEl.scrollTop / (contentEl.scrollHeight - contentEl.clientHeight)) * 100) / 100;
+  }
+  try {
+    window.parent.postMessage({
+      type: "ks_interaction",
+      projectId: currentProject.id,
+      tabsClicked: tabsClicked,
+      timeOnTabs: timeOnTabs,
+      scrollDepth: scrollDepth
+    }, "*");
+  } catch(e) {}
+}
+
+// Send scroll depth periodically
+var scrollTimer = null;
+document.getElementById("ks-tab-content").addEventListener("scroll", function() {
+  if (scrollTimer) clearTimeout(scrollTimer);
+  scrollTimer = setTimeout(sendInteraction, 500);
+});
+
+// Send final interaction on unload
+window.addEventListener("beforeunload", function() {
+  var elapsed = Math.round((Date.now() - tabStartTime) / 1000);
+  var label = currentTab.charAt(0).toUpperCase() + currentTab.slice(1);
+  timeOnTabs[label] = (timeOnTabs[label] || 0) + elapsed;
+  sendInteraction();
+});
+
+// Boot
+init();
+</script>
+</body>
+</html>
