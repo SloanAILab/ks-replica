@@ -778,6 +778,7 @@ function sendInteraction() {
     window.parent.postMessage({
       type: "ks_interaction",
       projectId: currentProject.id,
+      projectName: currentProject.name,
       mode: displayMode,
       tabsClicked: tabsClicked,
       timeOnTabs: timeOnTabs,
