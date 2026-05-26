@@ -369,6 +369,7 @@ var currentTab = "campaign";
 var tabStartTime = Date.now();
 var tabsClicked = ["Campaign"];
 var timeOnTabs = {};
+var tabLog = [];
 var displayMode = "full";
 
 // ---- Viewport / Section Tracking ----
@@ -409,6 +410,9 @@ function switchToTab(tabName) {
   var elapsed = Math.round((Date.now() - tabStartTime) / 1000);
   var prevLabel = currentTab.charAt(0).toUpperCase() + currentTab.slice(1);
   timeOnTabs[prevLabel] = (timeOnTabs[prevLabel] || 0) + elapsed;
+
+  // Log this tab visit (sequential, with repeats)
+  tabLog.push({ tab: prevLabel, dur: elapsed });
 
   // Capture scroll depth for the tab we're leaving
   updateScrollDepthForCurrentTab();
@@ -777,6 +781,7 @@ function sendInteraction() {
       mode: displayMode,
       tabsClicked: tabsClicked,
       timeOnTabs: timeOnTabs,
+      tabLog: tabLog,
       scrollDepth: scrollDepth,
       scrollDepthByTab: scrollDepthByTab,
       sectionVisibility: sectionVisibility,
@@ -797,6 +802,7 @@ window.addEventListener("beforeunload", function() {
   var elapsed = Math.round((Date.now() - tabStartTime) / 1000);
   var label = currentTab.charAt(0).toUpperCase() + currentTab.slice(1);
   timeOnTabs[label] = (timeOnTabs[label] || 0) + elapsed;
+  tabLog.push({ tab: label, dur: elapsed });
   updateScrollDepthForCurrentTab();
   flushSectionVisibility();
   sendInteraction();
